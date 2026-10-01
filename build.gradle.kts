@@ -60,18 +60,16 @@ val buildDirectory: Directory = layout.buildDirectory.get()
 
 tasks.register("buildBtPinPhoneApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
-  inputSpec.set(layout.projectDirectory.file("openapi-specs/bt-pin-phone-api.json"))
+  inputSpec.set("openapi-specs/bt-pin-phone-api.json")
   outputDir.set("$buildDirectory/generated/btpinphoneapi")
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated")
   configOptions.set(configValues)
   globalProperties.set(mapOf("models" to ""))
-
-  skipValidateSpec.set(true)
 }
 
 tasks.register("buildMedusaApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
-  inputSpec.set(layout.projectDirectory.file("openapi-specs/medusa-api.json"))
+  inputSpec.set("openapi-specs/medusa-api.json")
   outputDir.set("$buildDirectory/generated/medusaapi")
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated")
   configOptions.set(configValues)
@@ -80,7 +78,7 @@ tasks.register("buildMedusaApiModel", GenerateTask::class) {
 
 tasks.register("buildPrisonApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
-  inputSpec.set(layout.projectDirectory.file("openapi-specs/prison-api.json"))
+  inputSpec.set("openapi-specs/prison-api.json")
   outputDir.set("$buildDirectory/generated/prisonapi")
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated")
   configOptions.set(configValues)
@@ -89,7 +87,7 @@ tasks.register("buildPrisonApiModel", GenerateTask::class) {
 
 tasks.register("buildPrisonerSearchApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
-  inputSpec.set(layout.projectDirectory.file("openapi-specs/prisoner-search-api.json"))
+  inputSpec.set("openapi-specs/prisoner-search-api.json")
   outputDir.set("$buildDirectory/generated/prisonersearchapi")
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonerSearch.generated")
   configOptions.set(configValues)
@@ -98,7 +96,7 @@ tasks.register("buildPrisonerSearchApiModel", GenerateTask::class) {
 
 tasks.register("buildPrisonerAdjudicationsApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
-  inputSpec.set(layout.projectDirectory.file("openapi-specs/manage-adjudications-api.json"))
+  inputSpec.set("openapi-specs/manage-adjudications-api.json")
   outputDir.set("$buildDirectory/generated/prisoneradjudicationsapi")
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.prisoneradjudications.generated")
   configOptions.set(configValues)
