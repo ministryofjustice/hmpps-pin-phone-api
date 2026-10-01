@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/finance-holds/prison/CKI/offenders/G3682UE/release-hold-transaction/123456"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "finance-release-hold-response.json"
+  }
+}
