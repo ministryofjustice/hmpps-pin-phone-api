@@ -69,7 +69,7 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: true
       docker_multiplatform: false
-      download_build_artifacts: true
+      download_build_artifacts: ${{ github.ref == 'refs/heads/main' }}
   deploy_dev:
     name: Deploy to the development environment
     needs:
