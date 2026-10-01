@@ -1,19 +1,19 @@
 ---
-# Per environment values which override defaults in hmpps-pin-phone-api/values.yaml
+# Per environment values which override defaults in hmpps-digital-canteen-api/values.yaml
 
 generic-service:
   replicaCount: 1
 
   ingress:
-    host: pin-phone-api-dev.hmpps.service.justice.gov.uk
+    host: pin-phone-api-test.hmpps.service.justice.gov.uk
     className: modsec-non-prod
     modsecurity_enabled: true
-    modsecurity_github_team: "hmpps-digital-canteen-devs"
+    modsecurity_github_team: "hmpps-digital-canteen"
     modsecurity_snippet: |
       SecRuleEngine On
       # Team here grants access to the OpenSearch logs to delve into the cause of the blockage
-      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-digital-canteen-devs,tag:namespace={{ .Release.Namespace }}"
-      # Disables request body scanning so free-text form fields  do not trigger false positives
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-assessments,tag:namespace={{ .Release.Namespace }}"
+      # Disables request body scanning so free-text form fields do not trigger false positives
       SecRuleUpdateTargetById 920272 "!REQUEST_BODY"
       # Change default denial to be a 406 so that we can tell easily that it is modsecurity doing the blocking
       SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
@@ -32,9 +32,9 @@ generic-service:
     API_PRISON_API_BASE_URL: "https://prison-api-dev.prison.service.justice.gov.uk"
     SPRINGDOC_API-DOCS_ENABLED: "true"
     SPRINGDOC_SWAGGER-UI_ENABLED: "true"
-    API_MEDUSA_BASE_URL: "https://pin-phone-medusa-dev.prison.service.justice.gov.uk"
+    API_MEDUSA_BASE_URL: "https://pin-phone-medusa-test.prison.service.justice.gov.uk"
     API_BT_BASE_URL: "https://api.qa.pinphone.bt.com:8443"
-    SPRING_PROFILES_ACTIVE: dev
+    SPRING_PROFILES_ACTIVE: test
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

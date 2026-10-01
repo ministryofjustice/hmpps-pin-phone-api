@@ -2,7 +2,7 @@
 # Per environment values which override defaults in hmpps-pin-phone-api/values.yaml
 
 generic-service:
-  replicaCount: 2
+  replicaCount: 1
 
   ingress:
     host: pin-phone-api-preprod.hmpps.service.justice.gov.uk

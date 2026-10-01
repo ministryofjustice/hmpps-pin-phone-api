@@ -3,30 +3,46 @@ info.app:
   version: 1.0
 
 spring:
+  jackson:
+    datatype:
+      enum:
+        READ_UNKNOWN_ENUM_VALUES_AS_NULL: true
   application:
     name: hmpps-pin-phone-api
 
-#  This jackson configuration is only applied for java.util.Date.
-#  It is ignored for LocalDateTime, and therefore unnecessary for most projects
-#  jackson:
-#    date-format: "yyyy-MM-dd HH:mm:ss"
+  #  This jackson configuration is only applied for java.util.Date.
+  #  It is ignored for LocalDateTime, and therefore unnecessary for most projects
+  #  jackson:
+  #    date-format: "yyyy-MM-dd HH:mm:ss"
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${hmpps-auth.url}/.well-known/jwks.json
+          jwk-set-uri: ${api.hmpps-auth.base-url}/.well-known/jwks.json
 
       client:
+        registration:
+          hmpps-pin-phone-api:
+            provider: hmpps-auth
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: read
         provider:
           hmpps-auth:
-            token-uri: ${hmpps-auth.url}/oauth/token
+            token-uri: ${api.hmpps-auth.base-url}/oauth/token
+
   http:
     codecs:
       max-in-memory-size: 10MB
   web:
     error:
       include-message: always
+  datasource:
+    url: 'jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}?sslmode=prefer'
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
 server:
   port: 8080
@@ -63,3 +79,7 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+
+opa:
+  url: http://localhost:8181

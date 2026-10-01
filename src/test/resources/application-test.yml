@@ -5,8 +5,37 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
-hmpps-auth:
-  url: "http://localhost:8090/auth"
+api:
+  hmpps-auth:
+    base-url: http://localhost:8090/auth
+  prisoner-adjudications:
+    base-url: http://localhost:8091
+  health-and-medication:
+    base-url: http://localhost:8092
+  prisoner-incentives:
+    base-url: http://localhost:8093
+  prisoner-search:
+    base-url: http://localhost:8094
+  open-food-facts:
+    base-url: http://localhost:8095
+  open-products-facts:
+    base-url: http://localhost:8096
+  prison-api:
+    base-url: http://localhost:8098
+  medusa:
+    base-url: http://localhost:8097
+    publishable-key: test-pk
+    timeout-ms: 5s
+  bt:
+    base-url: http://localhost:8099
+
+bt:
+  client:
+    id: test-client-id
+    secret: test-client-secret
+
+admin-email: test@test.com
+admin-password: test-password
 
 springdoc:
   api-docs:
