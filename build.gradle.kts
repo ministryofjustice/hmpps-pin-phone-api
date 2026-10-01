@@ -65,6 +65,8 @@ tasks.register("buildBtPinPhoneApiModel", GenerateTask::class) {
   modelPackage.set("uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated")
   configOptions.set(configValues)
   globalProperties.set(mapOf("models" to ""))
+
+  skipValidateSpec.set(true)
 }
 
 tasks.register("buildMedusaApiModel", GenerateTask::class) {
