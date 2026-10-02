@@ -1,0 +1,65 @@
+name: Deploy PR to dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        required: true
+        options:
+          - dev
+          - test
+      pr_number:
+        description: PR number (used for image tag)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  app_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.app_version.outputs.version }}
+    steps:
+      - id: app_version
+        name: Application version creators
+        uses: ministryofjustice/hmpps-github-shared-actions/.github/actions/build-test-and-deploy/create_app_version@f52dbae537425d92f2216c4a2d9e0e44e603abb1 #v1
+
+  gradle_verify:
+    name: Validate the kotlin
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2
+    secrets: inherit
+    with:
+      gradle-command: 'BUILD_NUMBER=${{ needs.app_version.outputs.version }} ./gradlew assemble check'
+      upload-build-artifacts: true
+      java-version: "25"
+    needs:
+      - app_version
+
+  build:
+    name: Build docker image for PR dev deploy
+    needs:
+      - gradle_verify
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2
+    with:
+      docker_registry: 'ghcr.io'
+      registry_org: 'ministryofjustice'
+      additional_docker_tag: 'pr-${{ inputs.pr_number }}'
+      push: true
+      docker_multiplatform: false
+      tag_latest: false
+      download_build_artifacts: true
+
+  deploy_dev:
+    name: Deploy to the development environment
+    needs:
+      - build
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: 'false'

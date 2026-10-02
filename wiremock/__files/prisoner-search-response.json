@@ -1,0 +1,17 @@
+{
+  "prisonerNumber": "G3682UE",
+  "bookingId": "962098",
+  "bookNumber": "12345A",
+  "firstName": "JOHN",
+  "lastName": "DOE",
+  "dateOfBirth": "1990-01-15",
+  "gender": "Male",
+  "youthOffender": false,
+  "status": "ACTIVE IN",
+  "inOutStatus": "IN",
+  "prisonId": "CKI",
+  "prisonName": "Cookham Wood (HMP)",
+  "cellLocation": "MDI-1-1-001",
+  "legalStatus": "SENTENCED",
+  "convictedStatus": "Convicted"
+}

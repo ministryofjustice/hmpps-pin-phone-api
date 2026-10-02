@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/pcs/ControlledNumbers",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer mocked-bt-token"
+      }
+    },
+    "bodyPatterns": [
+      { "matchesJsonPath": "$.prisonerId" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "bt-pinphone-contacts-response.json"
+  }
+}

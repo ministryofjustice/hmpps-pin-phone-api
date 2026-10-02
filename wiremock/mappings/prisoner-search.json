@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/prisoner/G3682UE"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "prisoner-search-response.json"
+  }
+}

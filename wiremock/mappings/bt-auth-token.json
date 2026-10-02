@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/auth/token",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$.clientId" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "bt-auth-token-response.json"
+  }
+}

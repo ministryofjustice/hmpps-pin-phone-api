@@ -8,11 +8,14 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.BtApiExtension
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
+import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.MedusaApiExtension
+import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.PrisonApiExtension
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
-@ExtendWith(HmppsAuthApiExtension::class)
+@ExtendWith(HmppsAuthApiExtension::class, MedusaApiExtension::class, PrisonApiExtension::class, BtApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
@@ -26,7 +29,7 @@ abstract class IntegrationTestBase {
 
   internal fun setAuthorisation(
     username: String? = "AUTH_ADM",
-    roles: List<String> = listOf(),
+    roles: List<String> = listOf(ROLES),
     scopes: List<String> = listOf("read"),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisationHeader(username = username, scope = scopes, roles = roles)
 

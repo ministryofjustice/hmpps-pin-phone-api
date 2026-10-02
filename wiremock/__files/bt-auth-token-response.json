@@ -1,0 +1,5 @@
+{
+  "accessToken": "mocked-bt-token",
+  "tokenType": "test",
+  "expiresIn": 3600
+}

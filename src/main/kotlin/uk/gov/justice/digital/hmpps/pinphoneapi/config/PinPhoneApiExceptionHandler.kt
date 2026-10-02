@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.pinphoneapi.config
 
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -48,6 +49,17 @@ class PinPhoneApiExceptionHandler {
       ),
     ).also { log.debug("Forbidden (403) returned: {}", e.message) }
 
+  @ExceptionHandler(UpstreamException::class)
+  fun handleUpstreamException(ex: UpstreamException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(BAD_REQUEST)
+    .body(
+      ErrorResponse(
+        status = BAD_REQUEST,
+        userMessage = ex.message ?: "Upstream service error",
+        developerMessage = ex.message,
+      ),
+    ).also { log.error("Upstream exception: {}", ex.message) }
+
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(INTERNAL_SERVER_ERROR)
@@ -59,7 +71,20 @@ class PinPhoneApiExceptionHandler {
       ),
     ).also { log.error("Unexpected exception", e) }
 
+  @ExceptionHandler(CartCreationException::class)
+  fun handleCartCreationException(ex: CartCreationException): ResponseEntity<Map<String, String>> = ResponseEntity
+    .status(HttpStatus.BAD_GATEWAY)
+    .body(
+      mapOf(
+        "code" to "CART_CREATION_FAILED",
+        "message" to (ex.message ?: "Failed to create cart"),
+      ),
+    )
+
   private companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
+
+class UpstreamException(message: String) : RuntimeException(message)
+class CartCreationException(message: String) : RuntimeException(message)

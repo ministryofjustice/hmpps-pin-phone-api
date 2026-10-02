@@ -7,15 +7,14 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class OpenApiDocsTest(
-  @Autowired private val buildProperties: BuildProperties,
-  @LocalServerPort private val port: Int = 0,
-) : IntegrationTestBase() {
+class OpenApiDocsTest : IntegrationTestBase() {
+  @LocalServerPort
+  private val port: Int = 0
 
   @Test
   fun `open api docs are available`() {
@@ -71,7 +70,9 @@ class OpenApiDocsTest(
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("info.version").isEqualTo(buildProperties.version)
+      .expectBody().jsonPath("info.version").value<String> {
+        assertThat(it).startsWith(DateTimeFormatter.ISO_DATE.format(LocalDate.now()))
+      }
   }
 
   @Test
@@ -94,7 +95,11 @@ class OpenApiDocsTest(
   }
 
   @ParameterizedTest
-  @Disabled("TODO Enable this test once you have added security schema to OpenApiConfiguration.OpenAPi().components(). Add the security scheme / roles to @CsvSource")
+  @Disabled(
+    "" +
+      "TODO Enable this test once you have added security schema to OpenApiConfiguration.OpenAPi().components(). " +
+      "Add the security scheme / roles to @CsvSource",
+  )
   @CsvSource(value = ["security-scheme-name, ROLE_"])
   fun `the security scheme is setup for bearer tokens`(key: String, role: String) {
     webTestClient.get()

@@ -1,31 +1,62 @@
 services:
   hmpps-pin-phone-api:
-    image: ghcr.io/ministryofjustice/hmpps-pin-phone-api:latest
+    image: ghcr.io/ministryofjustice/hmpps-pin-phone-api:local
     networks:
       - hmpps
     container_name: hmpps-pin-phone-api
+    depends_on:
+      - wiremock
     ports:
       - "8080:8080"
     healthcheck:
       test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/8080"]
+    entrypoint: ["java", "-jar", "/app/app.jar"]
     environment:
       - SERVER_PORT=8080
-      - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
+      #       Retrieve from DEV secrets
+      - CLIENT_ID=
+      - CLIENT_SECRET=
+      - API_HMPPS_AUTH_BASE_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
       - SPRING_PROFILES_ACTIVE=dev
+      - JAVA_TOOL_OPTIONS=
+      - API_BT_BASE_URL=http://wiremock:8075
+      - BT_CLIENT_ID=test-client-id
+      - BT_CLIENT_SECRET=test-client-secret
+      - API_MEDUSA_BASE_URL=http://host.docker.internal:9000
 
-  hmpps-auth:
-    image: ghcr.io/ministryofjustice/hmpps-auth:latest
+      #     Use DEV test prisoner
+
+      #      - API_PRISONER_SEARCH_BASE_URL=https://prisoner-search-dev.prison.service.justice.gov.uk
+      #      - API_PRISON_API_BASE_URL=https://prison-api-dev.prison.service.justice.gov.uk
+
+      #     or to use wiremock version
+      - API_PRISONER_SEARCH_BASE_URL=http://wiremock:8075
+      - API_PRISON_API_BASE_URL=http://wiremock:8075
+
+  wiremock:
+    image: wiremock/wiremock:3x
     networks:
       - hmpps
-    container_name: hmpps-auth
     ports:
-      - "8090:8080"
-    healthcheck:
-      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/8080"]
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
-      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
+      - "8075:8075"
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings
+      - ./wiremock/__files:/home/wiremock/__files
+    command: --verbose --local-response-templating --port 8075
+
+#  hmpps-auth:
+#    image: ghcr.io/ministryofjustice/hmpps-auth:latest
+#    networks:
+#      - hmpps
+#    container_name: hmpps-auth
+#    ports:
+#      - "8090:8080"
+#    healthcheck:
+#      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/8080"]
+#    environment:
+#      - SERVER_PORT=8080
+#      - SPRING_PROFILES_ACTIVE=dev
+#      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
 
 networks:
   hmpps:
