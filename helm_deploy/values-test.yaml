@@ -8,11 +8,11 @@ generic-service:
     host: pin-phone-api-test.hmpps.service.justice.gov.uk
     className: modsec-non-prod
     modsecurity_enabled: true
-    modsecurity_github_team: "hmpps-digital-canteen"
+    modsecurity_github_team: "hmpps-digital-canteen-devs"
     modsecurity_snippet: |
       SecRuleEngine On
       # Team here grants access to the OpenSearch logs to delve into the cause of the blockage
-      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-digital-canteen,tag:namespace={{ .Release.Namespace }}"
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-digital-canteen-devs,tag:namespace={{ .Release.Namespace }}"
       # Disables request body scanning so free-text form fields do not trigger false positives
       SecRuleUpdateTargetById 920272 "!REQUEST_BODY"
       # Change default denial to be a 406 so that we can tell easily that it is modsecurity doing the blocking
