@@ -5,7 +5,7 @@ generic-service:
   replicaCount: 1
 
   ingress:
-    host: pin-phone-api-test.hmpps.service.justice.gov.uk
+    host: pin-phone-test.prison.service.justice.gov.uk
     className: modsec-non-prod
     modsecurity_enabled: true
     modsecurity_github_team: "hmpps-digital-canteen-devs"
