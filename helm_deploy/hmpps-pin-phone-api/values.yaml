@@ -29,8 +29,8 @@ generic-service:
     hmpps-pin-phone-api-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     hmpps-pin-phone-api-client-creds:
-      CLIENT_ID: 'API_CLIENT_ID'
-      CLIENT_SECRET: 'API_CLIENT_SECRET'
+      CLIENT_ID: 'CLIENT_ID'
+      CLIENT_SECRET: 'CLIENT_SECRET'
     medusa-secrets:
       JWT_SECRET: "jwt-secret"
       COOKIE_SECRET: "cookie-secret"
