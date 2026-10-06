@@ -1,0 +1,42 @@
+---
+# Per environment values which override defaults in hmpps-digital-canteen-api/values.yaml
+
+generic-service:
+  replicaCount: 1
+
+  ingress:
+    host: pin-phone-test.prison.service.justice.gov.uk
+    className: modsec-non-prod
+    modsecurity_enabled: true
+    modsecurity_github_team: "hmpps-digital-canteen-devs"
+    modsecurity_snippet: |
+      SecRuleEngine On
+      # Team here grants access to the OpenSearch logs to delve into the cause of the blockage
+      SecDefaultAction "phase:2,pass,log,tag:github_team=hmpps-digital-canteen-devs,tag:namespace={{ .Release.Namespace }}"
+      # Disables request body scanning so free-text form fields do not trigger false positives
+      SecRuleUpdateTargetById 920272 "!REQUEST_BODY"
+      # Change default denial to be a 406 so that we can tell easily that it is modsecurity doing the blocking
+      SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+      SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+      SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
+
+  env:
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
+    API_HMPPS_AUTH_BASE_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    API_HEALTH_AND_MEDICATION_BASE_URL: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
+    API_PRISONER_SEARCH_BASE_URL: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    API_PRISONER_ADJUDICATIONS_BASE_URL: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
+    API_PRISONER_INCENTIVES_BASE_URL: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
+    API_OPEN_FOOD_FACTS_BASE_URL: "https://world.openfoodfacts.org"
+    API_OPEN_PRODUCTS_FACTS_BASE_URL: "https://world.openproductsfacts.org"
+    API_PRISON_API_BASE_URL: "https://prison-api-dev.prison.service.justice.gov.uk"
+    SPRINGDOC_API-DOCS_ENABLED: "true"
+    SPRINGDOC_SWAGGER-UI_ENABLED: "true"
+    API_MEDUSA_BASE_URL: "https://pin-phone-medusa-test.prison.service.justice.gov.uk"
+    API_BT_BASE_URL: "https://api.qa.pinphone.bt.com:8443"
+    SPRING_PROFILES_ACTIVE: test
+
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
+# See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
+generic-prometheus-alerts:
+  alertSeverity: n/a

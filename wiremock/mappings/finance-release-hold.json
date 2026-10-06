@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/finance-holds/prison/CKI/offenders/G3682UE/release-hold/123456"
+  },
+  "response": {
+    "status": 201
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "reference": "12345",
+  "prisonerId": "test",
+  "creditLimitPence": 5000,
+  "preBalancePence": 1000,
+  "newBalancePence": 1100
+}

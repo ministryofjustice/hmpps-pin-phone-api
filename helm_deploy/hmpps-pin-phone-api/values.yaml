@@ -12,31 +12,75 @@ generic-service:
   ingress:
     enabled: true
     host: app-hostname.local # override per environment
-    tlsSecretName: hmpps-pin-phone-api-cert
+    tlsSecretName: hmpps-pin-phone-cert
 
   # Environment variables to load into the deployment
   env:
     SERVER_PORT: "8080"
-    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    # JAVA_TOOL_OPTIONS is set in the base image (hmpps-eclipse-temurin) with:
-    #   -XX:MaxRAMPercentage=50.0
-    # Uncomment below to override memory settings if needed.
-    # Check resources.limits.memory is set appropriately.
-    #
-    # Percentage-based example:
-    #   JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=75.0"
-    #
-    # Fixed memory example:
-    #   JAVA_TOOL_OPTIONS: "-Xms512m -Xmx1024m"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.json"
 
-  # Pre-existing kubernetes secrets to load as environment variables in the deployment.
-  # namespace_secrets:
-  #   [name of kubernetes secret]:
-  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
-
+  # Secret env vars
   namespace_secrets:
+    rds-postgresql-instance-output:
+      DB_HOST: rds_instance_address
+      DB_NAME: database_name
+      DB_USER: database_username
+      DB_PASSWORD: database_password
     hmpps-pin-phone-api-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    hmpps-pin-phone-api-client-creds:
+      CLIENT_ID: 'API_CLIENT_ID'
+      CLIENT_SECRET: 'API_CLIENT_SECRET'
+    medusa-secrets:
+      JWT_SECRET: "jwt-secret"
+      COOKIE_SECRET: "cookie-secret"
+      ADMIN_EMAIL: "admin-email"
+      ADMIN_PASSWORD: "admin-password"
+    bt-client-creds:
+      BT_CLIENT_ID: 'BT_CLIENT_ID'
+      BT_CLIENT_SECRET: 'BT_CLIENT_SECRET'
+
+  allowlist:
+    groups:
+      - internal
+
+  volumes:
+    - name: opa-policies
+      configMap:
+        name: opa-policies
+
+
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+
+      args:
+        - run
+        - --server
+        - --addr=127.0.0.1:8181
+        - /opa-policies/decision.rego
+        - /opa-policies/limits.rego
+        - /opa-policies/main.rego
+        - /opa-policies/rule_engine.rego
+        - /opa-policies/visibility.rego
+        - /opa-policies/warnings.rego
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      volumeMounts:
+        - name: opa-policies
+          mountPath: /opa-policies
 
 generic-prometheus-alerts:
   targetApplication: hmpps-pin-phone-api

@@ -1,2 +1,41 @@
-hmpps-auth:
-  url: "http://localhost:8090/auth"
+api:
+  hmpps-auth:
+    base-url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    timeout-ms: 20s
+  health-and-medication:
+    base-url: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
+  prisoner-search:
+    base-url: http://localhost:8075
+    #    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
+  prison-api:
+    base-url: http://localhost:8075
+    #    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
+  bt:
+    base-url: http://localhost:8075
+  medusa:
+    base-url: http://localhost:9000
+    timeout-ms: 20s
+  prisoner-adjudications:
+    base-url: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
+  prisoner-incentives:
+    base-url: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
+  open-food-facts:
+    base-url: "https://world.openfoodfacts.org"
+    timeout-ms: 20s
+  open-products-facts:
+    base-url: "https://world.openproductsfacts.org"
+    timeout-ms: 20s
+
+
+bt:
+  client:
+    id: test-client-id
+    secret: test-client-secret
+
+opa:
+  url: http://localhost:8181
