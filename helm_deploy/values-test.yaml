@@ -35,6 +35,7 @@ generic-service:
     API_MEDUSA_BASE_URL: "https://pin-phone-medusa-test.prison.service.justice.gov.uk"
     API_BT_BASE_URL: "https://api.qa.pinphone.bt.com:8443"
     SPRING_PROFILES_ACTIVE: test
+    FLIPT_URL: "https://feature-toggles-dev.hmpps.service.justice.gov.uk"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

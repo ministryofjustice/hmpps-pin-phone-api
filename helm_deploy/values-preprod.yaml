@@ -34,6 +34,7 @@ generic-service:
     SPRINGDOC_SWAGGER-UI_ENABLED: "true"
     API_MEDUSA_BASE_URL: "https://pin-phone-medusa.prison.service.justice.gov.uk"
     API_BT_BASE_URL: "https://placeholder"
+    FLIPT_URL: "https://feature-toggles-preprod.hmpps.service.justice.gov.uk"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

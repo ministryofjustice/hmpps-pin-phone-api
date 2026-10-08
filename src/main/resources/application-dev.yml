@@ -39,3 +39,7 @@ bt:
 
 opa:
   url: http://localhost:8181
+
+flipt:
+  url: https://feature-toggles-dev.hmpps.service.justice.gov.uk
+  namespace: hmpps-pin-phone
