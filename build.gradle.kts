@@ -3,13 +3,13 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
-  id("org.openapi.generator") version "7.24.0"
-  kotlin("plugin.spring") version "2.4.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
+  id("org.openapi.generator") version "7.26.0"
+  kotlin("plugin.spring") version "2.4.21"
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
@@ -19,17 +19,17 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.32.11")
+    implementation("org.webjars:swagger-ui:5.33.1")
   }
   implementation("org.springdoc:springdoc-openapi-starter-common:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.32.2")
+    implementation("org.webjars:swagger-ui:5.33.1")
   }
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.47") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.48") {
     exclude(group = "io.swagger.core.v3")
   }
 }
