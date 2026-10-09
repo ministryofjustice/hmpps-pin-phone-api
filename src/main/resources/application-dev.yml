@@ -42,4 +42,3 @@ opa:
 
 flipt:
   url: https://feature-toggles-dev.hmpps.service.justice.gov.uk
-  namespace: hmpps-pin-phone

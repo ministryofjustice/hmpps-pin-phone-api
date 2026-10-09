@@ -45,4 +45,3 @@ springdoc:
 
 flipt:
   url: https://fake-flipt
-  namespace: hmpps-pin-phone

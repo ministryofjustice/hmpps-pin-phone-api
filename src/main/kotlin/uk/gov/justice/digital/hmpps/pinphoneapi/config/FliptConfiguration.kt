@@ -12,7 +12,6 @@ import java.time.Duration
 @EnableConfigurationProperties
 class FliptConfiguration(
   @param:Value("\${flipt.url}") val fliptUrl: String,
-  @param:Value("\${flipt.namespace}") val fliptNamespace: String,
 ) {
 
   private lateinit var client: FliptClient
@@ -20,7 +19,7 @@ class FliptConfiguration(
   @Bean
   fun fliptClient() = FliptClient
     .builder()
-    .namespace(fliptNamespace)
+    .namespace("hmpps-pin-phone")
     .url(fliptUrl)
     .updateInterval(Duration.ofSeconds(120))
     .build()
