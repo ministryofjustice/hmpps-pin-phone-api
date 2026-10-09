@@ -42,3 +42,7 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+flipt:
+  url: https://fake-flipt
+  namespace: hmpps-pin-phone
