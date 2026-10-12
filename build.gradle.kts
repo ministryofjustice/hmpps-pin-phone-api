@@ -19,11 +19,11 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.33.1")
+    implementation("org.webjars:swagger-ui:5.33.2")
   }
   implementation("org.springdoc:springdoc-openapi-starter-common:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.33.1")
+    implementation("org.webjars:swagger-ui:5.33.2")
   }
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
