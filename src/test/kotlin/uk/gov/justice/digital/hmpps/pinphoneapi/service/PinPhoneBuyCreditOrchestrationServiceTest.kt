@@ -387,8 +387,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       CartMetadata(
         prisonId = PRISONER_ID,
         offenderNo = PRISONER_NUMBER,
-        firstName = "John",
-        secondName = "Doe",
       ),
 
     )
@@ -418,8 +416,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
           metadata = CartMetadata(
             prisonId = PRISONER_ID,
             offenderNo = PRISONER_NUMBER,
-            firstName = "John",
-            secondName = "Doe",
           ),
         ),
       )
