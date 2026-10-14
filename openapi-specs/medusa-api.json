@@ -9,196 +9,13 @@
       "email": "feedback@digital.justice.gov.uk"
     }
   },
-  "paths": {
-    "/internal/pin-phone/carts": {
-      "post": {
-        "operationId": "createPinPhoneCart",
-        "summary": "Create a PIN phone cart",
-        "description": "Creates a new cart for a prisoner's PIN phone purchase. If the prisoner has used the service before, the cart is linked to their existing customer record. Otherwise, a new customer and prisoner record are created and linked.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCartRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Cart created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Region not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to create cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/internal/pin-phone/carts/{id}/add-items": {
-      "post": {
-        "operationId": "addPinPhoneToCart",
-        "summary": "Add PIN phone credit to cart",
-        "description": "Adds a PIN phone credit item to the specified cart with the given amount.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The cart ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddItemsRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Item added to cart successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "PIN Phone variant not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to add pin phone to cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/internal/pin-phone/carts/{id}/complete": {
-      "post": {
-        "operationId": "completePinPhoneCart",
-        "summary": "Complete a PIN phone cart",
-        "description": "Completes a PIN phone cart by creating a payment collection, payment session with the BT payment result, and running the cart completion workflow.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The cart ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Cart completed or payment failure recorded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/CompleteCartResponse"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request — missing or invalid payload, or empty cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Cart not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal error during payment collection or session creation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
       "CreateCartRequest": {
         "type": "object",
-        "required": ["metadata"],
+        "required": [
+          "metadata"
+        ],
         "properties": {
           "metadata": {
             "$ref": "#/components/schemas/CartMetadata"
@@ -207,7 +24,10 @@
       },
       "CartMetadata": {
         "type": "object",
-        "required": ["prison_id", "offender_no"],
+        "required": [
+          "prison_id",
+          "offender_no"
+        ],
         "properties": {
           "prison_id": {
             "type": "string",
@@ -232,6 +52,21 @@
             "format": "int64",
             "description": "Amount in pence",
             "example": 1000
+          }
+        }
+      },
+      "CartResponse": {
+        "type": "object",
+        "properties": {
+          "cart": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The cart ID",
+                "example": "cart_1234567890"
+              }
+            }
           }
         }
       },
@@ -316,21 +151,6 @@
           }
         }
       },
-      "CartResponse": {
-        "type": "object",
-        "properties": {
-          "cart": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "description": "The cart ID",
-                "example": "cart_1234567890"
-              }
-            }
-          }
-        }
-      },
       "CompleteCartResponse": {
         "type": "object",
         "required": [
@@ -380,5 +200,191 @@
         }
       }
     }
-  }
-  }
+  },
+  "paths": {
+    "/internal/pin-phone/carts": {
+      "post": {
+        "operationId": "createPinPhoneCart",
+        "summary": "Create a PIN phone cart",
+        "description": "Creates a new cart for a prisoner's PIN phone purchase. If the prisoner has used the service before, the cart is linked to their existing customer record. Otherwise, a new customer and prisoner record are created and linked.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cart created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Region not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/pin-phone/carts/{id}/complete": {
+      "post": {
+        "operationId": "completePinPhoneCart",
+        "summary": "Complete a PIN phone cart",
+        "description": "Completes a PIN phone cart by creating a payment collection, payment session with the BT payment result, and running the cart completion workflow.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The cart ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cart completed or payment failure recorded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CompleteCartResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — missing or invalid payload, or empty cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cart not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error during payment collection or session creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/pin-phone/carts/{id}/add-items": {
+      "post": {
+        "operationId": "addPinPhoneToCart",
+        "summary": "Add PIN phone credit to cart",
+        "description": "Adds a PIN phone credit item to the specified cart with the given amount.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The cart ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddItemsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item added to cart successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "PIN Phone variant not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add pin phone to cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
