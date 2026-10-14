@@ -38,8 +38,6 @@ class MedusaInternalClientTest {
       CartMetadata(
         prisonId = "MDI",
         offenderNo = "A1234AA",
-        firstName = "John",
-        secondName = "Doe",
       ),
     )
 
@@ -94,8 +92,6 @@ class MedusaInternalClientTest {
         CartMetadata(
           prisonId = "MDI",
           offenderNo = "A1234AA",
-          firstName = "John",
-          secondName = "Doe",
         ),
       )
       val exception = assertThrows<UpstreamException> {
