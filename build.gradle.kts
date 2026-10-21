@@ -13,17 +13,17 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
-  implementation("io.flipt:flipt-client-java:1.3.4")
+  implementation("io.flipt:flipt-client-java:1.3.5")
 
   // OpenAPI dependencies
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.1.1")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.33.1")
+    implementation("org.webjars:swagger-ui:5.34.0")
   }
   implementation("org.springdoc:springdoc-openapi-starter-common:3.1.1")
   constraints {
-    implementation("org.webjars:swagger-ui:5.33.1")
+    implementation("org.webjars:swagger-ui:5.34.0")
   }
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
