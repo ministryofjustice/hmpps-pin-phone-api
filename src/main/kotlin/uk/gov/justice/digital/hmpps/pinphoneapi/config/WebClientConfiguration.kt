@@ -5,6 +5,7 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.web.reactive.function.client.WebClient
@@ -124,9 +125,10 @@ class WebClientConfiguration(
     .baseUrl(opaBaseUri)
     .build()
 
-  // todo: remove insecure cert (bt is currently on QA environment)
-  @Bean
-  fun btPinPhoneWebClient(builder: WebClient.Builder): WebClient {
+  // todo: bt is QA environment has no cert
+  @Profile("dev", "test", "preprod")
+  @Bean("btPinPhoneWebClient")
+  fun btPinPhoneWebClientInsecure(builder: WebClient.Builder): WebClient {
     val sslContext = SslContextBuilder.forClient()
       .trustManager(InsecureTrustManagerFactory.INSTANCE)
       .build()
@@ -137,4 +139,10 @@ class WebClientConfiguration(
       .clientConnector(ReactorClientHttpConnector(httpClient))
       .build()
   }
+
+  @Profile("prod")
+  @Bean("btPinPhoneWebClient")
+  fun btPinPhoneWebClientSecure(builder: WebClient.Builder): WebClient = builder
+    .baseUrl(btPinPhoneBaseUri)
+    .build()
 }
