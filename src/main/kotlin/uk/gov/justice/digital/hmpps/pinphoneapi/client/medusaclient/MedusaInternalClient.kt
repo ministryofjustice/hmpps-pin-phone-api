@@ -88,4 +88,25 @@ class MedusaInternalClient(
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
+
+  fun getSar(createCartRequest: CreateCartRequest): CartResponse = medusaInternalClient
+    .post()
+    .uri("/internal/pin-phone/subject-access-request")
+    .bodyValue(createCartRequest)
+    .retrieve()
+    .bodyToMono(CartResponse::class.java)
+    .onErrorMap(WebClientResponseException::class.java) { ex ->
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("Create cart failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Create cart failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Create cart failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
+    }
+    .block()!!
 }
