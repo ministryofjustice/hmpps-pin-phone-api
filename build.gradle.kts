@@ -3,7 +3,7 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.13"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.14"
   id("org.openapi.generator") version "7.26.0"
   kotlin("plugin.spring") version "2.4.21"
 }
