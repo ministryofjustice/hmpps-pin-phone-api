@@ -34,5 +34,6 @@ generic-service:
     SPRINGDOC_SWAGGER-UI_ENABLED: "true"
     API_MEDUSA_BASE_URL: "https://pin-phone-medusa.prison.service.justice.gov.uk"
     API_BT_BASE_URL: "https://placeholder"
+    SPRING_PROFILES_ACTIVE: preprod
     FLIPT_URL: "https://feature-toggles-preprod.hmpps.service.justice.gov.uk"
     FLIPT_NAMESPACE: hmpps-pin-phone
