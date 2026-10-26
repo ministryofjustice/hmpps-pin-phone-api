@@ -125,7 +125,7 @@ class WebClientConfiguration(
     .baseUrl(opaBaseUri)
     .build()
 
-  // todo: bt is QA environment has no cert
+  // todo: nonprod bt is on their QA environment, which has no cert
   @Profile("dev", "test", "preprod")
   @Bean("btPinPhoneWebClient")
   fun btPinPhoneWebClientInsecure(builder: WebClient.Builder): WebClient {
