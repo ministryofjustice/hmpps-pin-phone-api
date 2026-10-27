@@ -52,7 +52,7 @@ generic-service:
 
   extraContainers:
     - name: opa
-      image: openpolicyagent/opa:1.21.2
+      image: openpolicyagent/opa:1.21.4
 
       args:
         - run
