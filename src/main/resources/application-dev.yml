@@ -40,6 +40,10 @@ bt:
 opa:
   url: http://localhost:8181
 
+hmpps:
+  sar:
+    additionalAccessRole: ROLE_PIN_PHONE_CREDIT_API
+
 flipt:
   url: https://feature-toggles-dev.hmpps.service.justice.gov.uk
   namespace: hmpps-pin-phone
