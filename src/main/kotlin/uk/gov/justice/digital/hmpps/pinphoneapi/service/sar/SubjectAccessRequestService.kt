@@ -50,16 +50,15 @@ class SubjectAccessRequestService(
             paymentStatus = "Authorized",
             paymentAuthorizedAt = "2026-10-14T17:55:00",
             paymentCreatedAt = "2026-10-14T17:55:00",
-            paymentUpdatedAt= "2026-10-14T17:55:00",
+            paymentUpdatedAt = "2026-10-14T17:55:00",
             amountInPence = "500",
             paymentOutcome = "AUTHORISED",
             btCreditLimit = "500",
             btBalanceBeforeTransaction = "1000",
             btBalanceAfterTransaction = "1500",
             errorCode = "",
-            errorDescription = ""
-          )
-
+            errorDescription = "",
+          ),
         ),
       ),
     )
