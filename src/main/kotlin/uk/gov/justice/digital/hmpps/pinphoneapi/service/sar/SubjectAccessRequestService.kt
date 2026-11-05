@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.pinphoneapi.service.sar
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.BtPinPhoneClient
-
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SarPinPhone
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SubjectAccessResponseData
