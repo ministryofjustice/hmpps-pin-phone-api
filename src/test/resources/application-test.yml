@@ -46,3 +46,12 @@ springdoc:
 flipt:
   url: https://fake-flipt
   namespace: hmpps-pin-phone
+
+hmpps:
+  sar:
+    tests:
+      expected-api-response:
+        path: /sar/sar-api-response.json
+      expected-render-result:
+        path: /sar/sar-expected-report.html
+      attachments-expected: false

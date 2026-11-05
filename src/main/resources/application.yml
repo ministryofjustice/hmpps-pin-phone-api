@@ -84,3 +84,9 @@ springdoc:
 
 opa:
   url: http://localhost:8181
+
+hmpps:
+  sar:
+    template:
+      path: /sar/templates/sar_template.mustache
+      enabled: true
