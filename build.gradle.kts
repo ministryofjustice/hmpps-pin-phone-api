@@ -3,27 +3,27 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.14"
-  id("org.openapi.generator") version "7.26.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
+  id("org.openapi.generator") version "7.27.0"
   kotlin("plugin.spring") version "2.4.21"
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:3.2.0")
-  implementation("io.flipt:flipt-client-java:1.3.5")
+  implementation("io.flipt:flipt-client-java:1.4.0")
 
   // OpenAPI dependencies
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.2.0")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
   constraints {
-    implementation("org.webjars:swagger-ui:5.34.0")
+    implementation("org.webjars:swagger-ui:5.34.1")
   }
   implementation("org.springdoc:springdoc-openapi-starter-common:3.2.0")
   constraints {
-    implementation("org.webjars:swagger-ui:5.34.0")
+    implementation("org.webjars:swagger-ui:5.34.1")
   }
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
