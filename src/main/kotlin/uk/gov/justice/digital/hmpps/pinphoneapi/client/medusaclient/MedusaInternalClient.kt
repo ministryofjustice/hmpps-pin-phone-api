@@ -13,7 +13,9 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
+import java.time.LocalDate
 import kotlin.jvm.java
 
 @Component
@@ -85,6 +87,35 @@ class MedusaInternalClient(
     }
     .onErrorMap(WebClientRequestException::class.java) { ex ->
       logger.error("Cart completion failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
+    }
+    .block()!!
+
+  fun getSarReport(prisonerId: String, fromDate: LocalDate?, toDate: LocalDate?): SarRequestResponse = medusaInternalClient
+    .get()
+    .uri { uriBuilder ->
+      uriBuilder
+        .path("/internal/pin-phone/subject-access-request")
+        .queryParam("prisonerId", prisonerId)
+        .apply {
+          fromDate?.let { queryParam("fromDate", it.toString()) }
+          toDate?.let { queryParam("toDate", it.toString()) }
+        }
+        .build()
+    }
+    .retrieve()
+    .bodyToMono(SarRequestResponse::class.java)
+    .onErrorMap(WebClientResponseException::class.java) { ex ->
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("SAR request failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "SAR request failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("SAR request failed due to connection issue", ex)
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
