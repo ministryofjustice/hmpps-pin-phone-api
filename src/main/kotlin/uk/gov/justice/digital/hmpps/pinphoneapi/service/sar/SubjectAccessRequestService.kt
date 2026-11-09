@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.pinphoneapi.service.sar
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
-import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SarPinPhone
+import uk.gov.justice.digital.hmpps.pinphoneapi.mapping.sar.toSarPinPhoneList
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SubjectAccessResponseData
 import uk.gov.justice.hmpps.kotlin.sar.HmppsPrisonSubjectAccessRequestService
 import uk.gov.justice.hmpps.kotlin.sar.HmppsSubjectAccessRequestContent
@@ -30,34 +30,20 @@ class SubjectAccessRequestService(
     val from = fromDate ?: LocalDate.EPOCH
     val to = toDate ?: LocalDate.now()
 
+    val response = medusaStoreClient.getSarReport(prn, from, to)
+
     log.info("SAR: Returning SAR response for prisoner $prn, from $from to $to.")
 
+    if (response.sarContent!!.isEmpty()) {
+      log.info("SAR: no matches found for prisoner $prn, from $from to $to.")
+      return null
+    }
     HmppsSubjectAccessRequestContent(
       content = SubjectAccessResponseData(
         prisonerNumber = prn,
         fromDate = from,
         toDate = to,
-        pinPhones = listOf(
-          SarPinPhone(
-            prisonCode = "MDI",
-            orderStatus = "Completed",
-            orderCreatedAt = "2026-10-14T18:00:00",
-            orderUpdatedAt = "2026-10-14T18:00:00",
-            amountInPounds = "5",
-            rawAmount = "value : 0.01 and precison : 20",
-            paymentStatus = "Authorized",
-            paymentAuthorizedAt = "2026-10-14T17:55:00",
-            paymentCreatedAt = "2026-10-14T17:55:00",
-            paymentUpdatedAt = "2026-10-14T17:55:00",
-            amountInPence = "500",
-            paymentOutcome = "AUTHORISED",
-            btCreditLimit = "500",
-            btBalanceBeforeTransaction = "1000",
-            btBalanceAfterTransaction = "1500",
-            errorCode = "",
-            errorDescription = "",
-          ),
-        ),
+        pinPhones = response.sarContent?.toSarPinPhoneList(),
       ),
     )
   }

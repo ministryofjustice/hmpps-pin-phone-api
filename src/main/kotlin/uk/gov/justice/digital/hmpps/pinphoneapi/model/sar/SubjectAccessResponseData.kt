@@ -14,5 +14,5 @@ data class SubjectAccessResponseData(
   val toDate: LocalDate,
 
   @Schema(description = "All of the PIN phone transactions for the prisoner in this period")
-  val pinPhones: List<SarPinPhone>,
+  val pinPhones: List<SarPinPhone>?,
 )
