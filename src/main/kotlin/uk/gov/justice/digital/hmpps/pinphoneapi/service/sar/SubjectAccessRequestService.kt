@@ -25,7 +25,7 @@ class SubjectAccessRequestService(
   }
 
   override fun getPrisonContentFor(prn: String, fromDate: LocalDate?, toDate: LocalDate?): HmppsSubjectAccessRequestContent? = run {
-    log.info("SAR: processing subject access request for prisoner $prn, from $from to $to.")
+    log.info("SAR: processing subject access request for prisoner $prn, from $fromDate to $toDate.")
 
     val from = fromDate ?: LocalDate.EPOCH
     val to = toDate ?: LocalDate.now()
