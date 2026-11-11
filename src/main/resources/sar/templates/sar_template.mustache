@@ -1,0 +1,31 @@
+<h1 class="title">Digital Prisoner PIN phone Product</h1>
+<br>
+{{#.}}
+    {{#pinPhones}}
+        <br>
+        <h3>PIN Phone</h3>
+        <table class="summary-list">
+            <tr><td>Prison name</td><td>{{ getPrisonName prisonCode }}</td></tr>
+            <tr><td>Order status</td><td>{{ orderStatus }}</td></tr>
+            <tr><td>Order Created At</td><td>{{  orderCreatedAt }}</td></tr>
+            <tr><td>Order Update At</td><td>{{ optionalString orderUpdatedAt }}</td></tr>
+            <tr><td>Payment amount in pounds</td><td>{{ amountInPounds }}</td></tr>
+            <tr><td>Payment amount in pounds and precison</td><td>{{ rawAmount }}</td></tr>
+            <tr><td>Payment status</td><td>{{ paymentStatus }}</td></tr>
+            <tr><td>Payment was authorized at</td><td>{{ paymentAuthorizedAt }}</td></tr>
+            <tr><td>Payment was created</td><td>{{ paymentCreatedAt }}</td></tr>
+            <tr><td>Payment was updated</td><td>{{ paymentUpdatedAt }}</td></tr>
+            <tr><td>Prison code</td><td></td>{{ prisonCode }}</tr>
+            <tr><td>Payment amount in pence</td><td>{{ amountInPence }}</td></tr>
+            <tr><td>Payment authorisation outcome</td><td>{{ paymentOutcome }}</td></tr>
+            <tr><td>BT Credit Limit in pence</td><td>{{ btCreditLimit }}</td></tr>
+            <tr><td>BT balance before transaction</td><td>{{ btBalanceBeforeTransaction }}</td></tr>
+            <tr><td>BT balance after transaction</td><td>{{ btBalanceAfterTransaction }}</td></tr>
+            <tr><td>Payment failure error Code</td><td>{{ optionalString errorCode }}</td></tr>
+            <tr><td>Payment failure Error description</td><td>{{ optionalString errorDescription }}</td></tr>
+        </table>
+    {{/pinPhones}}
+    {{^pinPhones}}
+        <p>No data held</p>
+    {{/pinPhones}}
+{{/.}}

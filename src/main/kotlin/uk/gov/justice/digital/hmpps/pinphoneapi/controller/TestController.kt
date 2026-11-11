@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.BtPinPhoneTestSupportClient
@@ -21,6 +22,8 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.CreditAc
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.CreditAccountResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestResponse
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.AddHoldTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
@@ -28,6 +31,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.T
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.productenrichment.dto.ProductDetailsResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PrisonFinanceService
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.ProductEnrichmentInfoService
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api")
@@ -37,6 +41,7 @@ class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
   private val prisonFinanceService: PrisonFinanceService,
+  private val medusaInternalClient: MedusaInternalClient,
 ) {
 
   // Product endpoints
@@ -106,4 +111,12 @@ class TestController(
     @PathVariable holdNumber: Number,
     @RequestBody request: ReleaseHoldAndCreateTransaction,
   ): Transaction = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request.type)
+
+  @Operation(summary = "Get SAR report for a prisoner")
+  @GetMapping("/sar")
+  fun getSarReport(
+    @RequestParam prisonerId: String,
+    @RequestParam(required = false) fromDate: LocalDate?,
+    @RequestParam(required = false) toDate: LocalDate?,
+  ): SarRequestResponse = medusaInternalClient.getSarReport(prisonerId, fromDate, toDate)
 }
