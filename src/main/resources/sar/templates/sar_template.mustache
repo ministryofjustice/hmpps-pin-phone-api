@@ -8,7 +8,7 @@
             <tr><td>Prison name</td><td>{{ getPrisonName prisonCode }}</td></tr>
             <tr><td>Order status</td><td>{{ orderStatus }}</td></tr>
             <tr><td>Order Created At</td><td>{{ formatDate orderCreatedAt }}</td></tr>
-            <tr><td>Order Update At</td><td>{{optionalValue (formatDate orderUpdatedAt)}}</td></tr>
+            <tr><td>Order Update At</td><td>{{optionalValue (formatDate orderUpdatedAt) }}</td></tr>
             <tr><td>Payment amount in pounds</td><td>{{ amountInPounds }}</td></tr>
             <tr><td>Payment status</td><td>{{ paymentStatus }}</td></tr>
             <tr><td>Payment was authorized at</td><td>{{ formatDate paymentAuthorizedAt }}</td></tr>
