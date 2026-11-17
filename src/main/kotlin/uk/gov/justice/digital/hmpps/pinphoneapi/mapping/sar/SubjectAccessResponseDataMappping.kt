@@ -2,23 +2,27 @@ package uk.gov.justice.digital.hmpps.pinphoneapi.mapping.sar
 
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestContent
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SarPinPhone
+import java.math.BigDecimal
+import java.time.format.DateTimeFormatter
+
+val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
 fun SarRequestContent.toSarPinPhone() = SarPinPhone(
   prisonCode = this.prisonCode,
   orderStatus = this.orderStatus?.value,
-  orderCreatedAt = this.orderCreatedAt,
-  orderUpdatedAt = this.orderUpdatedAt,
+  orderCreatedAt = formatter.format(this.orderCreatedAt),
+  orderUpdatedAt = formatter.format(this.orderUpdatedAt),
   amountInPounds = this.amountInPounds,
   rawAmount = this.rawAmount,
   paymentStatus = this.paymentStatus?.value,
-  paymentAuthorizedAt = this.paymentAuthorizedAt,
-  paymentCreatedAt = this.paymentCreatedAt,
-  paymentUpdatedAt = this.paymentUpdatedAt,
+  paymentAuthorizedAt = formatter.format(this.paymentAuthorizedAt),
+  paymentCreatedAt = formatter.format(this.paymentCreatedAt),
+  paymentUpdatedAt = formatter.format(this.paymentUpdatedAt),
   amountInPence = this.amountInPence,
   paymentOutcome = this.paymentOutcome?.value,
   btCreditLimit = this.btCreditLimit,
-  btBalanceBeforeTransaction = this.btBalanceBeforeTransaction,
-  btBalanceAfterTransaction = this.btBalanceAfterTransaction,
+  btBalanceBeforeTransaction = this.btBalanceBeforeTransaction?.toBigDecimalOrNull()?.divide(BigDecimal("100"))?.toPlainString() ?: "0.00",
+  btBalanceAfterTransaction = this.btBalanceAfterTransaction?.toBigDecimalOrNull()?.divide(BigDecimal("100"))?.toPlainString() ?: "0.00",
   errorCode = this.errorCode,
   errorDescription = this.errorDescription,
 )
