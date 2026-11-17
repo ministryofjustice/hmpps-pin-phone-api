@@ -4,7 +4,6 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SarPinPhone
 import java.math.BigDecimal
 
-
 fun SarRequestContent.toSarPinPhone() = SarPinPhone(
   prisonCode = this.prisonCode,
   orderStatus = this.orderStatus?.value,
