@@ -34,7 +34,7 @@ class SubjectAccessRequestService(
 
     log.info("SAR: Returning SAR response for prisoner $prn, from $from to $to.")
 
-    if (response.sarContent!!.isEmpty()) {
+    if (response.sarContent.isNullOrEmpty()) {
       log.info("SAR: no matches found for prisoner $prn, from $from to $to.")
       return null
     }
