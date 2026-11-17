@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.pinphoneapi.mapping.sar
 
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestContent
 import uk.gov.justice.digital.hmpps.pinphoneapi.model.sar.SarPinPhone
+import java.math.BigDecimal
 
 fun SarRequestContent.toSarPinPhone() = SarPinPhone(
   prisonCode = this.prisonCode,
@@ -17,8 +18,8 @@ fun SarRequestContent.toSarPinPhone() = SarPinPhone(
   amountInPence = this.amountInPence,
   paymentOutcome = this.paymentOutcome?.value,
   btCreditLimit = this.btCreditLimit,
-  btBalanceBeforeTransaction = this.btBalanceBeforeTransaction,
-  btBalanceAfterTransaction = this.btBalanceAfterTransaction,
+  btBalanceBeforeTransaction = this.btBalanceBeforeTransaction?.toBigDecimalOrNull()?.divide(BigDecimal("100"))?.toPlainString() ?: "0.00",
+  btBalanceAfterTransaction = this.btBalanceAfterTransaction?.toBigDecimalOrNull()?.divide(BigDecimal("100"))?.toPlainString() ?: "0.00",
   errorCode = this.errorCode,
   errorDescription = this.errorDescription,
 )
