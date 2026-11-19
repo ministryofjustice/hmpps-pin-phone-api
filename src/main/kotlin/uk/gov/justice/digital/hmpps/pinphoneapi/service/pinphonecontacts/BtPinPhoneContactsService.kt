@@ -28,7 +28,7 @@ class BtPinPhoneContactsService(
       BtPinPhoneControlledNumbersRequest(reference, prisonerNumber),
     )
       .map { response ->
-        response.controlledNumbers.map { it.toContactDto(response.prisonerId) }
+        response.controlledNumbers.filter { it.controlStatus && it.callAllowed }.map { it.toContactDto(response.prisonerId) }
       }
   }
 }
