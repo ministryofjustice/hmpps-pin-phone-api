@@ -151,7 +151,7 @@ object PinPhoneTestFixture {
       name = "Michael Jones",
       phoneNumber = "07700900355",
       controlStatus = true,
-      callAllowed = false,
+      callAllowed = true,
       legal = false,
       allowMonitor = true,
       alert = true,

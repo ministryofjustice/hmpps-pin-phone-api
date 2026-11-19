@@ -65,7 +65,7 @@ class BtPinPhoneContactsServiceTest {
           controlStatus = true,
           callAllowed = true,
           legal = false,
-          allowMonitor = false,
+          allowMonitor = true,
           alert = false,
           override = false,
           relationshipId = 1,
