@@ -133,6 +133,7 @@ class WebClientConfiguration(
       .trustManager(InsecureTrustManagerFactory.INSTANCE)
       .build()
     val httpClient = HttpClient.create()
+      .responseTimeout(Duration.ofSeconds(20))
       .secure { it.sslContext(sslContext) }
     return builder
       .baseUrl(btPinPhoneBaseUri)
@@ -142,7 +143,14 @@ class WebClientConfiguration(
 
   @Profile("prod")
   @Bean("btPinPhoneWebClient")
-  fun btPinPhoneWebClientSecure(builder: WebClient.Builder): WebClient = builder
-    .baseUrl(btPinPhoneBaseUri)
-    .build()
+  fun btPinPhoneWebClientSecure(builder: WebClient.Builder): WebClient {
+
+    val httpClient = HttpClient.create()
+      .responseTimeout(Duration.ofSeconds(20))
+
+    return builder
+      .baseUrl(btPinPhoneBaseUri)
+      .clientConnector(ReactorClientHttpConnector(httpClient))
+      .build()
+  }
 }
