@@ -316,7 +316,8 @@
             "format": "int32"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "phoneNumber": {
             "type": "string"
