@@ -144,7 +144,6 @@ class WebClientConfiguration(
   @Profile("prod")
   @Bean("btPinPhoneWebClient")
   fun btPinPhoneWebClientSecure(builder: WebClient.Builder): WebClient {
-
     val httpClient = HttpClient.create()
       .responseTimeout(Duration.ofSeconds(20))
 
