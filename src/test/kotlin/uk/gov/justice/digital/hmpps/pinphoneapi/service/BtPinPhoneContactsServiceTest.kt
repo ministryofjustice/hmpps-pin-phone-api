@@ -51,7 +51,6 @@ class BtPinPhoneContactsServiceTest {
     assertThat(result[0].name).isEqualTo("John Doe")
     assertThat(result[0].phoneNumber).isEqualTo("07700900351")
     assertThat(result[5].name).isEqualTo("Unknown")
-
   }
 
   @Test
