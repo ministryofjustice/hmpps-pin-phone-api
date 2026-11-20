@@ -8,7 +8,7 @@ fun ControlledNumber.toContactDto(prisonerId: String): BtPinPhoneContactDto {
   return BtPinPhoneContactDto(
     prisonerId = prisonerId,
     id = id,
-    name = name,
+    name = this.name ?: "Unknown",
     phoneNumber = phoneNumber,
     controlStatus = controlStatus,
     callAllowed = callAllowed,
