@@ -8,7 +8,7 @@ fun ControlledNumber.toContactDto(prisonerId: String): BtPinPhoneContactDto {
   return BtPinPhoneContactDto(
     prisonerId = prisonerId,
     id = id,
-    name = name,
+    name = this.name ?: "Unknown",
     phoneNumber = phoneNumber,
     controlStatus = controlStatus,
     callAllowed = callAllowed,
@@ -24,7 +24,7 @@ fun ControlledNumber.toContactDto(prisonerId: String): BtPinPhoneContactDto {
 data class BtPinPhoneContactDto(
   val prisonerId: String,
   val id: Int,
-  val name: String,
+  val name: String?,
   val phoneNumber: String,
   val controlStatus: Boolean,
   val callAllowed: Boolean,
