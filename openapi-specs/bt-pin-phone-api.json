@@ -1,326 +1,2185 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.0.4",
   "info": {
-    "title": "BT Pin Phone API",
-    "description": "BT Pin Phone service API for prisoner phone credit management.",
-    "version": "1.0.0",
-    "contact": {
-      "name": "HMPPS Digital Studio",
-      "email": "feedback@digital.justice.gov.uk"
-    }
+    "title": "PinPhone API",
+    "version": "v1"
   },
   "paths": {
-    "/auth/token": {
+    "/Auth/token": {
       "post": {
-        "operationId": "getToken",
-        "summary": "Obtain an authentication token",
-        "description": "Authenticates with the BT Pin Phone service using client credentials and returns a bearer token.",
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BtTokenRequest"
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.Authentication.TokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.Authentication.TokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.Authentication.TokenRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Authentication successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BtTokenResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid client credentials"
+            "description": "OK"
           }
         }
       }
     },
-    "/pcs/Balance": {
+    "/PCS/Account": {
       "post": {
-        "operationId": "getPrisonerBalance",
-        "summary": "Get a prisoner's PIN phone balance",
-        "description": "Retrieves the current balance and credit limit for a prisoner's PIN phone account.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
+        "tags": [
+          "PCS"
         ],
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BtPinPhoneBalanceRequest"
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountRequest"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Balance retrieved successfully",
+          "201": {
+            "description": "Created",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BtPinPhoneBalanceResponse"
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountResponse"
                 }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorised — token missing or expired"
-          },
-          "404": {
-            "description": "Prisoner not found"
-          }
-        }
-      }
-    },
-    "/pcs/ControlledNumbers": {
-      "post": {
-        "operationId": "getControlledNumbers",
-        "summary": "Get list of prisoner's PIN phone contacts",
-        "description": "Retrieves the current contacts for a prisoner's PIN phone account.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BtPinPhoneControlledNumbersRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Controlled numbers retrieved successfully",
-            "content": {
+              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BtPinPhoneControlledNumbersResponse"
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountResponse"
                 }
-              }
-            }
-          },
-          "403": {
-            "description": "Unauthorised — token missing or expired"
-          },
-          "404": {
-            "description": "Prisoner not found"
-          }
-        }
-      }
-    },
-    "/pcs/AccountCredit": {
-      "post": {
-        "operationId": "accountCredit",
-        "summary": "Purchase PIN phone credit for a prisoner",
-        "description": "Adds credit to a prisoner's PIN phone account.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AccountCreditRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Credit added successfully",
-            "content": {
-              "application/json": {
+              },
+              "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccountCreditResponse"
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request — e.g. amount exceeds credit limit"
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Unauthorised — token missing or expired"
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/AccountStatus": {
+      "patch": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Prisoner not found"
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/AccountCredit": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/AccountDebit": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/PrisonCredit": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/PrisonDebit": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/ExternalCredit": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/Balance": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/Relationships": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.Relationships.RelationshipsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.Relationships.RelationshipsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.Relationships.RelationshipsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PCS/TransactionTypes": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.TransactionTypes.TransactionTypesRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.TransactionTypes.TransactionTypesRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.Lookups.TransactionTypes.TransactionTypesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PCS/ControlledNumbers": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/ControlledNumber": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/PCS/CallRecords": {
+      "post": {
+        "tags": [
+          "PCS"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     }
   },
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "Token obtained from /auth/token"
-      }
-    },
     "schemas": {
-      "BtTokenRequest": {
+      "Microsoft.AspNetCore.Mvc.ProblemDetails": {
         "type": "object",
-        "description": "Client credentials for BT authentication",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "PinPhone.Api.Public.Models.Authentication.TokenRequest": {
         "required": [
           "clientId",
           "clientSecret"
         ],
+        "type": "object",
         "properties": {
           "clientId": {
-            "type": "string",
-            "description": "The BT API client identifier"
+            "minLength": 1,
+            "type": "string"
           },
           "clientSecret": {
-            "type": "string",
-            "description": "The BT API client secret"
+            "minLength": 1,
+            "type": "string"
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "BtTokenResponse": {
-        "type": "object",
-        "description": "Authentication token response from BT",
+      "PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountRequest": {
         "required": [
-          "accessToken",
-          "tokenType",
-          "expiresIn"
-        ],
-        "properties": {
-          "accessToken": {
-            "type": "string",
-            "description": "The bearer token to use in subsequent requests"
-          },
-          "tokenType": {
-            "type": "string",
-            "description": "The type of token, typically 'Bearer'",
-            "example": "Bearer"
-          },
-          "expiresIn": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Token validity duration in seconds"
-          }
-        }
-      },
-      "BtPinPhoneBalanceRequest": {
-        "type": "object",
-        "description": "Request to retrieve a prisoner's PIN phone balance",
-        "required": [
-          "reference",
-          "prisonerId"
-        ],
-        "properties": {
-          "reference": {
-            "type": "string",
-            "description": "A unique reference for this request"
-          },
-          "prisonerId": {
-            "type": "string",
-            "description": "The prisoner's identifier"
-          }
-        }
-      },
-      "BtPinPhoneBalanceResponse": {
-        "type": "object",
-        "description": "Prisoner's PIN phone balance details",
-        "required": [
-          "reference",
+          "firstName",
+          "lastName",
+          "prisonCode",
           "prisonerId",
-          "balancePence",
-          "creditLimitPence"
+          "reference",
+          "statusActive"
         ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "prisonCode": {
+            "maxLength": 10,
+            "minLength": 3,
+            "type": "string"
+          },
+          "firstName": {
+            "maxLength": 30,
+            "minLength": 1,
+            "pattern": "^[\\p{L}' -]+$",
+            "type": "string"
+          },
+          "middleName": {
+            "maxLength": 30,
+            "pattern": "^[\\p{L}' -]+$",
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "maxLength": 30,
+            "minLength": 1,
+            "pattern": "^[\\p{L}' -]+$",
+            "type": "string"
+          },
+          "statusActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Account.AddAccount.AddAccountResponse": {
+        "type": "object",
         "properties": {
           "reference": {
             "type": "string",
-            "description": "The reference from the original request"
+            "nullable": true
           },
           "prisonerId": {
             "type": "string",
-            "description": "The prisoner's identifier"
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditRequest": {
+        "required": [
+          "amountPence",
+          "prisonerId",
+          "reference"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
           },
-          "balancePence": {
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "amountPence": {
+            "maximum": 99999,
+            "minimum": -99999,
             "type": "integer",
-            "format": "int32",
-            "description": "Current balance in pence"
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Account.AddCredit.AddCreditResponse": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "prisonerId": {
+            "type": "string",
+            "nullable": true
           },
           "creditLimitPence": {
             "type": "integer",
-            "format": "int32",
-            "description": "Maximum credit limit in pence"
+            "format": "int32"
+          },
+          "preBalancePence": {
+            "type": "number",
+            "format": "double"
+          },
+          "newBalancePence": {
+            "type": "number",
+            "format": "double"
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "BtPinPhoneControlledNumbersRequest": {
-        "type": "object",
-        "description": "Request to retrieve a prisoner's controlled phone numbers",
+      "PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceRequest": {
         "required": [
-          "reference",
-          "prisonerId"
+          "prisonerId",
+          "reference"
         ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Account.GetBalance.BalanceResponse": {
+        "type": "object",
         "properties": {
           "reference": {
             "type": "string",
-            "description": "A unique reference for this request"
+            "nullable": true
           },
           "prisonerId": {
             "type": "string",
-            "description": "The prisoner's identifier"
+            "nullable": true
+          },
+          "balancePence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "creditLimitPence": {
+            "type": "integer",
+            "format": "int32"
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "BtPinPhoneControlledNumbersResponse": {
+      "PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusRequest": {
+        "required": [
+          "prisonerId",
+          "reference",
+          "statusActive"
+        ],
         "type": "object",
-        "description": "Prisoner's controlled phone numbers",
-        "required": ["reference", "prisonerId", "controlledNumbers"],
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "statusActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Account.UpdateStatus.UpdateAccountStatusResponse": {
+        "type": "object",
         "properties": {
           "reference": {
             "type": "string",
-            "description": "The reference from the original request"
+            "nullable": true
           },
           "prisonerId": {
             "type": "string",
-            "description": "The prisoner's identifier"
-          },
-          "controlledNumbers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ControlledNumber"
-            }
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "ControlledNumber": {
+      "PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecord": {
         "type": "object",
-        "description": "A controlled phone number on a prisoner's account",
-        "required": ["id", "name", "phoneNumber", "controlStatus", "callAllowed", "legal", "allowMonitor", "alert", "override", "relationshipId"],
         "properties": {
           "id": {
             "type": "integer",
+            "format": "int64"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "callTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "integer",
             "format": "int32"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "costPence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "balancePence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prisonCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsRequest": {
+        "required": [
+          "prisonerId",
+          "reference"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "startDate": {
+            "maxLength": 10,
+            "minLength": 10,
+            "type": "string",
+            "nullable": true
+          },
+          "endDate": {
+            "maxLength": 10,
+            "minLength": 10,
+            "type": "string",
+            "nullable": true
+          },
+          "pageSize": {
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecordsResponse": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "prisonerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "callRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.CallRecords.Search.CallRecord"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberRequest": {
+        "required": [
+          "alert",
+          "allowMonitor",
+          "callAllowed",
+          "controlStatus",
+          "legal",
+          "name",
+          "number",
+          "override",
+          "prisonerId",
+          "reference",
+          "relationshipId"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 30,
+            "minLength": 1,
+            "pattern": "^[\\p{L}' -]+$",
+            "type": "string"
+          },
+          "number": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^\\d+$",
+            "type": "string"
+          },
+          "relationshipId": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "controlStatus": {
+            "type": "boolean"
+          },
+          "alert": {
+            "type": "boolean"
+          },
+          "legal": {
+            "type": "boolean"
+          },
+          "override": {
+            "type": "boolean"
+          },
+          "allowMonitor": {
+            "type": "boolean"
+          },
+          "callAllowed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.AddControlledNumber.AddControlledNumberResponse": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "prisonerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumber": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
           },
           "name": {
             "type": "string",
             "nullable": true
           },
           "phoneNumber": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "controlStatus": {
             "type": "boolean"
@@ -344,68 +2203,129 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "AccountCreditRequest": {
-        "type": "object",
-        "description": "Request to add credit to a prisoner's PIN phone account",
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersRequest": {
         "required": [
-          "reference",
           "prisonerId",
-          "amountPence"
+          "reference"
         ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumbersResponse": {
+        "type": "object",
         "properties": {
           "reference": {
             "type": "string",
-            "description": "A unique reference for this transaction"
+            "nullable": true
           },
           "prisonerId": {
             "type": "string",
-            "description": "The prisoner's identifier"
+            "nullable": true
           },
-          "amountPence": {
+          "controlledNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PinPhone.Api.Public.Models.PCS.ControlledNumbers.Search.ControlledNumber"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersRequest": {
+        "required": [
+          "id",
+          "prisonerId",
+          "reference"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "maxLength": 20,
+            "minLength": 3,
+            "type": "string"
+          },
+          "prisonerId": {
+            "maxLength": 20,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9]+$",
+            "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "controlStatus": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "pattern": "^[\\p{L}' -]+$",
+            "type": "string",
+            "nullable": true
+          },
+          "legal": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "relationshipID": {
             "type": "integer",
             "format": "int32",
-            "description": "The amount of credit to add in pence"
+            "nullable": true
           }
-        }
+        },
+        "additionalProperties": false
       },
-      "AccountCreditResponse": {
+      "PinPhone.Api.Public.Models.PCS.ControlledNumbers.UpdateStatus.UpdateControlledNumbersResponse": {
         "type": "object",
-        "description": "Response to add credit to a prisoner's PIN phone account",
-        "required": [
-          "reference",
-          "prisonerId",
-          "creditLimitPence",
-          "preBalancePence",
-          "newBalancePence"
-        ],
         "properties": {
           "reference": {
             "type": "string",
-            "description": "A unique reference for this transaction"
+            "nullable": true
           },
           "prisonerId": {
             "type": "string",
-            "description": "The prisoner's identifier"
+            "nullable": true
           },
-          "creditLimitPence": {
+          "id": {
             "type": "integer",
-            "format": "int32",
-            "description": "The amount of credit to add in pence"
-          },
-          "preBalancePence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The balance before"
-          },
-          "newBalancePence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The balance after"
+            "format": "int64"
           }
-        }
+        },
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Lookups.Relationships.RelationshipsRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PinPhone.Api.Public.Models.PCS.Lookups.TransactionTypes.TransactionTypesRequest": {
+        "type": "object",
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "PCS"
+    }
+  ]
 }
