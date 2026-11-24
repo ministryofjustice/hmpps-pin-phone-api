@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.GetCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
@@ -116,6 +117,26 @@ class MedusaInternalClient(
     }
     .onErrorMap(WebClientRequestException::class.java) { ex ->
       logger.error("SAR request failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
+    }
+    .block()!!
+
+  fun getCart(cartId: String): GetCartResponse = medusaInternalClient
+    .get()
+    .uri("/internal/pin-phone/carts/$cartId/get-cart")
+    .retrieve()
+    .bodyToMono(GetCartResponse::class.java)
+    .onErrorMap(WebClientResponseException::class.java) { ex ->
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("Get cart request failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "SAR request failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Get cart failed due to connection issue", ex)
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!

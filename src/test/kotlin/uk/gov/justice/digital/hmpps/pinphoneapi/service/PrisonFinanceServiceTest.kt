@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.H
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.Transaction
+import uk.gov.justice.digital.hmpps.pinphoneapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.PRISONER_NUMBER
@@ -37,7 +38,7 @@ class PrisonFinanceServiceTest {
       .thenReturn(expectedResponse)
 
     // When
-    val result = service.addHold(prisonId, offenderNo, 1050)
+    val result = service.addHold(prisonId, offenderNo, 1050, cartId = CART_ID)
 
     // Then
     val captor = argumentCaptor<AddHoldTransaction>()
@@ -75,7 +76,7 @@ class PrisonFinanceServiceTest {
       .thenReturn(expectedResponse)
 
     // When
-    val result = service.releaseHold(prisonId, offenderNo, holdNumber)
+    val result = service.releaseHold(prisonId, offenderNo, holdNumber, CART_ID)
 
     // Then
     val captor = argumentCaptor<ReleaseHoldTransaction>()
@@ -116,7 +117,7 @@ class PrisonFinanceServiceTest {
       .thenReturn(expectedResponse)
 
     // When
-    val result = service.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, clientRequest.type)
+    val result = service.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, clientRequest.type, CART_ID)
 
     // Then
     val captor = argumentCaptor<ReleaseHoldAndCreateTransaction>()

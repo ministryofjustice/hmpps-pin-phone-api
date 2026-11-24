@@ -22,7 +22,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     PrisonApiExtension.Companion.prisonApi.stubAddHold(PRISONER_ID, OFFENDER_ID)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold", PRISONER_ID, OFFENDER_ID)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold/{cartId}", PRISONER_ID, OFFENDER_ID, CART_ID)
       .headers(setAuthorisation())
       .bodyValue(request)
       .exchange()
@@ -46,7 +46,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     PrisonApiExtension.Companion.prisonApi.stubAddHoldFailure(PRISONER_ID, OFFENDER_ID, 400, errorMessage)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold", PRISONER_ID, OFFENDER_ID)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold/{cartId}", PRISONER_ID, OFFENDER_ID, CART_ID)
       .headers(setAuthorisation())
       .bodyValue(request)
       .exchange()
@@ -62,10 +62,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
     webTestClient.post()
       .uri(
-        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}/{cartId}",
         PRISONER_ID,
         OFFENDER_ID,
         HOLD_NUMBER,
+        CART_ID,
       )
       .headers(setAuthorisation())
       .exchange()
@@ -87,10 +88,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
     webTestClient.post()
       .uri(
-        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}/{cartId}",
         PRISONER_ID,
         OFFENDER_ID,
         HOLD_NUMBER,
+        CART_ID,
       )
       .headers(setAuthorisation())
       .exchange()
@@ -113,10 +115,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
     webTestClient.post()
       .uri(
-        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}/{cartId}",
         PRISONER_ID,
         OFFENDER_ID,
         HOLD_NUMBER,
+        CART_ID,
       )
       .headers(setAuthorisation())
       .bodyValue(request)
@@ -147,10 +150,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
     webTestClient.post()
       .uri(
-        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}/{cartId}",
         PRISONER_ID,
         OFFENDER_ID,
         HOLD_NUMBER,
+        CART_ID,
       )
       .headers(setAuthorisation())
       .bodyValue(request)

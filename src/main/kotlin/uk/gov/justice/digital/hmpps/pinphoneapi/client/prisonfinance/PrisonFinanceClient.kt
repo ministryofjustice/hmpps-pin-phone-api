@@ -39,6 +39,13 @@ class PrisonFinanceClient(
         .retrieve()
         .bodyToMono(HoldDetails::class.java)
         .block()!!
+    } catch (ex: WebClientResponseException.Conflict) {
+      logger.info(
+        "AddHold duplicate for offenderNo: {} clientUniqueReference: {}",
+        offenderNo,
+        request.clientUniqueReference,
+      )
+      throw DuplicateFinanceRequestException(request.clientUniqueReference)
     } catch (ex: WebClientResponseException) {
       val error = errorHandler.handleError(ex)
       logger.error("AddHold request failed for offenderNo: $offenderNo", error)
@@ -91,6 +98,13 @@ class PrisonFinanceClient(
         .retrieve()
         .bodyToMono(Transaction::class.java)
         .block()!!
+    } catch (ex: WebClientResponseException.Conflict) {
+      logger.info(
+        "release-hold-transaction duplicate for offenderNo: {} createClientUniqueReference: {}",
+        offenderNo,
+        request.createClientUniqueReference,
+      )
+      throw DuplicateFinanceRequestException(request.createClientUniqueReference)
     } catch (ex: WebClientResponseException) {
       val errorResponse = errorHandler.handleError(ex)
       logger.error("ReleaseHoldCreateTransaction request failed for offenderNo: $offenderNo", errorResponse)
@@ -111,3 +125,5 @@ class PrisonFinanceClient(
       }
   }
 }
+
+class DuplicateFinanceRequestException(clientUniqueReference: String?) : RuntimeException("Duplicate post: clientUniqueReference/createClientUniqueReference $clientUniqueReference has been used before")
