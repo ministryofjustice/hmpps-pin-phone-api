@@ -158,5 +158,17 @@ object PinPhoneTestFixture {
       override = false,
       relationshipId = 5,
     ),
+    ControlledNumber(
+      id = 162444,
+      name = null,
+      phoneNumber = "07700900355",
+      controlStatus = true,
+      callAllowed = true,
+      legal = false,
+      allowMonitor = true,
+      alert = true,
+      override = false,
+      relationshipId = 5,
+    ),
   )
 }
