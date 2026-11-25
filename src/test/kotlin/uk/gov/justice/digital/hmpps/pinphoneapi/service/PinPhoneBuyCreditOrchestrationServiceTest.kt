@@ -8,6 +8,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -19,8 +20,10 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CartResponseCart
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.GetCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.DuplicateFinanceRequestException
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
@@ -28,6 +31,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.PRISONER_NUMBER
+import java.time.LocalDateTime
 
 class PinPhoneBuyCreditOrchestrationServiceTest {
 
@@ -53,7 +57,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val amount: Long = 100
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -69,7 +73,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
         ),
       )
 
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
       .thenReturn(Transaction(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
@@ -91,9 +95,9 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals("test-order-id", result.orderId)
     assertEquals(cartId, result.cartId)
 
-    verify(financeService).addHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(amount))
+    verify(financeService).addHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(amount), eq(cartId))
     verify(btPinPhoneClient).addCredit(any())
-    verify(financeService).releaseHoldAndCreateTransaction(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER), any())
+    verify(financeService).releaseHoldAndCreateTransaction(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER), any(), eq(CART_ID))
 
     val paymentResultCaptor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
@@ -106,7 +110,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -123,7 +127,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
         ),
       )
 
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
       .thenReturn(Transaction(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
@@ -153,7 +157,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.error(UpstreamException("BT failed")))
@@ -177,8 +181,8 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(null, result.orderId)
     assertEquals(cartId, result.cartId)
     verify(btPinPhoneClient, times(3)).addCredit(any())
-    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER))
-    verify(financeService, times(0)).releaseHoldAndCreateTransaction(any(), any(), any(), any())
+    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER), eq(cartId))
+    verify(financeService, times(0)).releaseHoldAndCreateTransaction(any(), any(), any(), any(), eq(cartId))
 
     val captor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(CART_ID), captor.capture())
@@ -192,7 +196,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -208,7 +212,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
         ),
       )
 
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
       .thenThrow(UpstreamException("Transaction failed"))
 
     // When
@@ -218,7 +222,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(true, result.orderStatusRecorded)
     assertEquals(null, result.orderId)
     assertEquals(cartId, result.cartId)
-    verify(financeService).releaseHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER))
+    verify(financeService).releaseHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER), eq(cartId))
 
     val paymentResultCaptor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
@@ -232,13 +236,13 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.error(UpstreamException("BT failed")))
 
-    whenever(financeService.releaseHold(any(), any(), any()))
+    whenever(financeService.releaseHold(any(), any(), any(), any()))
       .thenThrow(UpstreamException("Release failed"))
 
     // When
@@ -261,7 +265,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(any(), any(), any()))
+    whenever(financeService.addHold(any(), any(), any(), any()))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -277,7 +281,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
         ),
       )
 
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
       .thenThrow(UpstreamException("Upstream error"))
 
     // When
@@ -288,7 +292,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(true, result.orderStatusRecorded)
     assertEquals(null, result.orderId)
     assertEquals(cartId, result.cartId)
-    verify(financeService).releaseHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER))
+    verify(financeService).releaseHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER), eq(cartId))
 
     val paymentResultCaptor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(CART_ID), paymentResultCaptor.capture())
@@ -301,7 +305,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `processCheckout returns paymentSuccessful true when payment succeeds but Medusa recording fails`() {
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(any(), any(), any()))
+    whenever(financeService.addHold(any(), any(), any(), any()))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -317,7 +321,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
         ),
       )
 
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
       .thenReturn(Transaction(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
@@ -331,14 +335,14 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(CART_ID, result.cartId)
 
     // Verify hold not released, issues with medusa should not impact payment as will be already processed
-    verify(financeService, times(0)).releaseHold(any(), any(), any())
+    verify(financeService, times(0)).releaseHold(any(), any(), any(), any())
   }
 
   @Test
   fun `processCheckout returns paymentSuccessful false when both BT and Medusa recording fail`() {
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(any(), any(), any()))
+    whenever(financeService.addHold(any(), any(), any(), any()))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
@@ -352,7 +356,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(false, result.paymentSuccessful)
     assertEquals(false, result.orderStatusRecorded)
     assertEquals(null, result.orderId)
-    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER))
+    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER), eq(CART_ID))
   }
 
   @Test
@@ -360,7 +364,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val cartId = CART_ID
     val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
 
-    whenever(financeService.addHold(any(), any(), any()))
+    whenever(financeService.addHold(any(), any(), any(), any()))
       .thenThrow(UpstreamException("Hold failed"))
 
     // When
@@ -376,8 +380,125 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(PaymentRequest.PaymentStatus.ERROR, paymentResultCaptor.firstValue.paymentStatus)
 
     verify(btPinPhoneClient, times(0)).addCredit(any())
-    verify(financeService, times(0)).releaseHold(any(), any(), any())
+    verify(financeService, times(0)).releaseHold(any(), any(), any(), any())
     verify(medusaStoreClient, times(1)).completeCart(any(), any())
+  }
+
+  @Test
+  fun `processCheckout returns success when addHold is duplicate and original completes after polling`() {
+    val cartId = CART_ID
+    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
+
+    whenever(financeService.addHold(any(), any(), any(), any()))
+      .thenThrow(DuplicateFinanceRequestException("CLIENT-HOLD-$cartId"))
+
+    whenever(medusaStoreClient.getCart(cartId))
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = false,
+          completedAt = null,
+          orderId = null,
+          offenderNo = "A1234BC",
+        ),
+      )
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = false,
+          completedAt = null,
+          orderId = null,
+          offenderNo = "A1234BC",
+        ),
+      )
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = true,
+          completedAt = LocalDateTime.now().minusDays(1),
+          orderId = "order_123",
+          offenderNo = "A1234BC",
+        ),
+      )
+
+    // When
+    val result = service.processCheckout(paymentRequest, cartId)
+
+    // Then
+    assertEquals(true, result.paymentSuccessful)
+    assertEquals(true, result.orderStatusRecorded)
+    assertEquals("order_123", result.orderId)
+    assertEquals(cartId, result.cartId)
+
+    verify(medusaStoreClient, times(3)).getCart(cartId)
+    verify(btPinPhoneClient, never()).addCredit(any())
+    verify(medusaStoreClient, never()).completeCart(any(), any())
+  }
+
+  @Test
+  fun `processCheckout returns success when release-hold-transaction is duplicate and original completes after polling`() {
+    val cartId = CART_ID
+    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
+
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence, cartId))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
+
+    whenever(btPinPhoneClient.addCredit(any()))
+      .thenReturn(
+        Mono.just(
+          AccountCreditResponse(
+            reference = "ref-123",
+            prisonerId = PRISONER_ID,
+            creditLimitPence = 5000,
+            preBalancePence = 1000,
+            newBalancePence = 1100,
+          ),
+        ),
+      )
+
+    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any(), any()))
+      .thenThrow(DuplicateFinanceRequestException("CLIENT-HOLD-$cartId"))
+
+    whenever(medusaStoreClient.getCart(cartId))
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = false,
+          completedAt = null,
+          orderId = null,
+          offenderNo = "A1234BC",
+        ),
+      )
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = false,
+          completedAt = null,
+          orderId = null,
+          offenderNo = "A1234BC",
+        ),
+      )
+      .thenReturn(
+        GetCartResponse(
+          cartId = cartId,
+          completed = true,
+          completedAt = LocalDateTime.now().minusDays(1),
+          orderId = "order_123",
+          offenderNo = "A1234BC",
+        ),
+      )
+
+    // When
+    val result = service.processCheckout(paymentRequest, cartId)
+
+    // Then
+    assertEquals(true, result.paymentSuccessful)
+    assertEquals(true, result.orderStatusRecorded)
+    assertEquals("order_123", result.orderId)
+    assertEquals(cartId, result.cartId)
+
+    verify(medusaStoreClient, times(3)).getCart(cartId)
+    verify(medusaStoreClient, never()).completeCart(any(), any())
   }
 
   @Test

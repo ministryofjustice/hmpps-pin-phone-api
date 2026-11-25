@@ -12,9 +12,9 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.DuplicateFinanceRequestException
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
-import java.util.UUID
 
 @Service
 class PinPhoneBuyCreditOrchestrationService(
@@ -24,6 +24,8 @@ class PinPhoneBuyCreditOrchestrationService(
 ) {
   companion object {
     private const val MAX_BT_ATTEMPTS = 3
+    private const val DUPLICATE_POLL_ATTEMPTS = 10
+    private const val DUPLICATE_POLL_INTERVAL_MS = 200L
     private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationService")
   }
 
@@ -45,7 +47,9 @@ class PinPhoneBuyCreditOrchestrationService(
      * Attempts to add hold, if fails call medusa so failure is captured.
      */
     val holdResponse = try {
-      financeService.addHold(prisonId, offenderNo, amountPence)
+      financeService.addHold(prisonId, offenderNo, amountPence, cartId)
+    } catch (e: DuplicateFinanceRequestException) {
+      return awaitOriginalCheckout(cartId, offenderNo)
     } catch (e: UpstreamException) {
       log.error("Failed to place hold for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
       val medusaRequest = PaymentRequest(
@@ -62,7 +66,7 @@ class PinPhoneBuyCreditOrchestrationService(
     log.info("Hold placed for prisoner {} holdNumber {}", offenderNo, holdResponse.holdNumber)
 
     val btResponse = try {
-      callBtApiWithRetry(offenderNo, amountPence.toInt())
+      callBtApiWithRetry(offenderNo, amountPence.toInt(), cartId)
     } catch (e: UpstreamException) {
       log.error("BT payment failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
       val errorCode = PaymentRequest.ErrorCode.BT_PAYMENT_FAILED
@@ -75,7 +79,10 @@ class PinPhoneBuyCreditOrchestrationService(
         offenderNo,
         holdResponse.holdNumber,
         ReleaseHoldAndCreateTransaction.Type.PHONE,
+        cartId,
       )
+    } catch (e: DuplicateFinanceRequestException) {
+      return awaitOriginalCheckout(cartId, offenderNo)
     } catch (e: UpstreamException) {
       log.error("Release hold/transaction failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
       val errorcode = PaymentRequest.ErrorCode.RELEASE_HOLD_CREATE_TRANSACTION_FAILED
@@ -102,11 +109,11 @@ class PinPhoneBuyCreditOrchestrationService(
   /**
    * Attempts to add credit via the BT API, retrying up to 3 times.
    */
-  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int): AccountCreditResponse {
+  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int, cartId: String): AccountCreditResponse {
+    val reference = cartId.removePrefix("cart_").take(20)
     var lastException: Exception? = null
     for (attempt in 1..MAX_BT_ATTEMPTS) {
       try {
-        val reference = UUID.randomUUID().toString().replace("-", "").take(20)
         val request = AccountCreditRequest(
           reference = reference,
           prisonerId = offenderNo,
@@ -139,7 +146,7 @@ class PinPhoneBuyCreditOrchestrationService(
     errorMessage: String?,
   ): CompleteCartResponse {
     try {
-      financeService.releaseHold(prisonId, offenderNo, holdNumber)
+      financeService.releaseHold(prisonId, offenderNo, holdNumber, cartId)
       log.info("Hold released for prisoner {} holdNumber {}", offenderNo, holdNumber)
     } catch (e: UpstreamException) {
       log.error("Failed to release hold for prisoner {} holdNumber {}: {}", offenderNo, holdNumber, e.message)
@@ -205,6 +212,30 @@ class PinPhoneBuyCreditOrchestrationService(
       orderId = null,
       cartId = cartId,
     )
+  }
+
+  /**
+   * A hold or release-hold transaction already exists on this cart,
+   * wait for the original request to complete the cart
+   * and return its outcome
+   */
+  private fun awaitOriginalCheckout(cartId: String, offenderNo: String): CompleteCartResponse {
+    log.info("Duplicate checkout for cart {} prisoner {}: wait for original request", cartId, offenderNo)
+    repeat(DUPLICATE_POLL_ATTEMPTS) {
+      val cart = runCatching { medusaStoreClient.getCart(cartId) }.getOrNull()
+      if (cart?.completedAt != null) {
+        log.info("Original checkout for cart {} completed – returning its result", cartId)
+        return CompleteCartResponse(
+          paymentSuccessful = true,
+          orderStatusRecorded = true,
+          orderId = cart.orderId,
+          cartId = cartId,
+        )
+      }
+      Thread.sleep(DUPLICATE_POLL_INTERVAL_MS)
+    }
+    log.warn("Original checkout for cart {} prisoner {} not complete after polling", cartId, offenderNo)
+    throw Exception("Original checkout for cart $cartId not complete after polling")
   }
 
   fun createCart(request: CreateCartRequest): ResponseEntity<CartResponse> {

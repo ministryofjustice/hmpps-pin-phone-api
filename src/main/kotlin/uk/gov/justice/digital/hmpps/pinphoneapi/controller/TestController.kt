@@ -90,27 +90,30 @@ class TestController(
   ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
 
   // prison finance endpoints
-  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold")
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold/{cartId}")
   fun addHold(
     @PathVariable prisonId: String,
     @PathVariable offenderNo: String,
+    @PathVariable cartId: String,
     @RequestBody request: AddHoldTransaction,
-  ): HoldDetails = prisonFinanceService.addHold(prisonId, offenderNo, request.amount)
+  ): HoldDetails = prisonFinanceService.addHold(prisonId, offenderNo, request.amount, cartId)
 
-  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}")
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}/{cartId}")
   fun releaseHold(
     @PathVariable prisonId: String,
     @PathVariable offenderNo: String,
     @PathVariable holdNumber: Number,
-  ): ResponseEntity<Void> = prisonFinanceService.releaseHold(prisonId, offenderNo, holdNumber)
+    @PathVariable cartId: String,
+  ): ResponseEntity<Void> = prisonFinanceService.releaseHold(prisonId, offenderNo, holdNumber, cartId)
 
-  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}")
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}/{cartId}")
   fun releaseHoldAndCreateTransaction(
     @PathVariable prisonId: String,
     @PathVariable offenderNo: String,
     @PathVariable holdNumber: Number,
+    @PathVariable cartId: String,
     @RequestBody request: ReleaseHoldAndCreateTransaction,
-  ): Transaction = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request.type)
+  ): Transaction = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request.type, cartId)
 
   @Operation(summary = "Get SAR report for a prisoner")
   @GetMapping("/sar")

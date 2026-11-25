@@ -24,19 +24,23 @@ class PrisonFinanceService(
     const val REMOVE_HOLD_DESCRIPTION = "Remove HOLD"
     const val CLIENT_REFERENCE_PREFIX = "CLIENT-"
     const val CLIENT_TRANSACTION_ID_LENGTH = 12
+
+    private const val HOLD = "HOLD"
+    private const val RELEASE = "RELEASE"
+    private const val REMOVE = "REMOVE"
+    private const val PHONE = "PHONE"
   }
 
   /**
    * Adds a hold to the prisoner.
    */
-  fun addHold(prisonId: String, offenderNo: String, amount: Long): HoldDetails {
-    val clientReference = generateClientReference()
+  fun addHold(prisonId: String, offenderNo: String, amount: Long, cartId: String): HoldDetails {
     val request = AddHoldTransaction(
       description = HOLD_DESCRIPTION,
       amount = amount,
-      clientTransactionId = clientReference.toClientTransactionId(),
+      clientTransactionId = generateClientTransactionId(),
       clientName = offenderNo,
-      clientUniqueReference = clientReference.toClientUniqueReference(),
+      clientUniqueReference = uniqueReference(HOLD, cartId),
     )
 
     return prisonFinanceClient.addHold(prisonId, offenderNo, request)
@@ -45,13 +49,12 @@ class PrisonFinanceService(
   /**
    * Releases a hold.
    */
-  fun releaseHold(prisonId: String, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
-    val clientReference = generateClientReference()
+  fun releaseHold(prisonId: String, offenderNo: String, holdNumber: Number, cartId: String): ResponseEntity<Void> {
     val request = ReleaseHoldTransaction(
       description = REMOVE_HOLD_DESCRIPTION,
-      clientTransactionId = clientReference.toClientTransactionId(),
+      clientTransactionId = generateClientTransactionId(),
       clientName = offenderNo,
-      clientUniqueReference = clientReference.toClientUniqueReference(),
+      clientUniqueReference = uniqueReference(RELEASE, cartId),
     )
 
     return prisonFinanceClient.releaseHold(prisonId, offenderNo, holdNumber, request)
@@ -65,17 +68,16 @@ class PrisonFinanceService(
     offenderNo: String,
     holdNumber: Number,
     clientRequestType: ReleaseHoldAndCreateTransaction.Type,
+    cartId: String,
   ): Transaction {
-    val createClientReference = generateClientReference()
-    val removeClientReference = generateClientReference()
     val request = ReleaseHoldAndCreateTransaction(
       type = clientRequestType,
       removeDescription = REMOVE_HOLD_DESCRIPTION,
       createDescription = "$HOLD_DESCRIPTION for $clientRequestType",
-      clientTransactionId = createClientReference.toClientTransactionId(),
+      clientTransactionId = generateClientTransactionId(),
       clientName = offenderNo,
-      removeClientUniqueReference = removeClientReference.toClientUniqueReference(),
-      createClientUniqueReference = createClientReference.toClientUniqueReference(),
+      removeClientUniqueReference = uniqueReference(REMOVE, cartId),
+      createClientUniqueReference = uniqueReference(PHONE, cartId),
     )
 
     return prisonFinanceClient.releaseHoldCreateTransaction(prisonId, offenderNo, holdNumber, request)
@@ -86,4 +88,8 @@ class PrisonFinanceService(
   private fun String.toClientTransactionId(): String = take(CLIENT_TRANSACTION_ID_LENGTH)
 
   private fun String.toClientUniqueReference(): String = "$CLIENT_REFERENCE_PREFIX$this"
+
+  private fun uniqueReference(operation: String, cartId: String): String = "$CLIENT_REFERENCE_PREFIX$operation-$cartId"
+
+  private fun generateClientTransactionId(): String = UUID.randomUUID().toString().take(CLIENT_TRANSACTION_ID_LENGTH)
 }
