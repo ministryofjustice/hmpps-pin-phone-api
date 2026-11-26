@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.GetCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequestV2
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.SarRequestResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
 import java.time.LocalDate
@@ -71,10 +72,16 @@ class MedusaInternalClient(
     }
     .block()!!
 
-  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse = medusaInternalClient
+  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse =
+    doCompleteCart("/internal/pin-phone/carts/$cartId/complete", paymentRequest)
+
+  fun completeCartV2(cartId: String, paymentRequest: PaymentRequestV2): CompleteCartResponse =
+    doCompleteCart("/internal/pin-phone/v2/carts/$cartId/complete", paymentRequest)
+
+  private fun doCompleteCart(uri: String, body: Any): CompleteCartResponse = medusaInternalClient
     .post()
-    .uri("/internal/pin-phone/carts/$cartId/complete")
-    .bodyValue(mapOf("PaymentRequest" to paymentRequest))
+    .uri(uri)
+    .bodyValue(mapOf("PaymentRequest" to body))
     .retrieve()
     .bodyToMono(CompleteCartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->

@@ -6,12 +6,12 @@ api:
     base-url: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
     timeout-ms: 20s
   prisoner-search:
-    base-url: http://localhost:8075
-    #    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    #base-url: http://localhost:8075
+    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
     timeout-ms: 20s
   prison-api:
-    base-url: http://localhost:8075
-    #    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
+    #base-url: http://localhost:8075
+    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
     timeout-ms: 20s
   bt:
     base-url: http://localhost:8075

@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.CreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldTransaction
@@ -25,6 +26,39 @@ class PrisonFinanceClient(
   companion object {
     val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
   }
+
+
+  @Suppress("ktlint:standard:function-expression-body")
+  fun createTransactionPhone(
+    prisonId: String,
+    offenderNo: String,
+    xClientName: String,
+    request: CreateTransaction,
+  ): Transaction {
+    return try {
+      prisonerApiClient.post()
+        .uri("/api/v1/prison/{prisonId}/offenders/{offenderNo}/transactions", prisonId, offenderNo)
+        .bodyValue(request)
+        .header("X-Client-Name", xClientName)
+        .retrieve()
+        .bodyToMono(Transaction::class.java)
+        .block()!!
+    } catch (ex: WebClientResponseException.Conflict) {
+      logger.info(
+        "Phone transaction duplicate for offenderNo: {} clientUniqueReference: {}",
+        offenderNo,
+        request.clientUniqueRef,
+      )
+      throw DuplicateFinanceRequestException(request.clientUniqueRef)
+    } catch (ex: WebClientResponseException) {
+      val error = errorHandler.handleError(ex)
+      logger.error("Phone transaction request failed for offenderNo: $offenderNo", error)
+      throw UpstreamException(error.userMessage ?: "Phone transaction request failed")
+    }
+  }
+
+
+  //todo: below calls will be made legacy and can be removed later
 
   @Suppress("ktlint:standard:function-expression-body")
   fun addHold(

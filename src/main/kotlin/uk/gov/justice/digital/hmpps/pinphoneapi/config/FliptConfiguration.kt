@@ -18,12 +18,15 @@ class FliptConfiguration(
   private lateinit var client: FliptClient
 
   @Bean
-  fun fliptClient() = FliptClient
-    .builder()
-    .namespace(fliptNamespace)
-    .url(fliptUrl)
-    .updateInterval(Duration.ofSeconds(120))
-    .build()
+  fun fliptClient(): FliptClient {
+    client = FliptClient
+      .builder()
+      .namespace(fliptNamespace)
+      .url(fliptUrl)
+      .updateInterval(Duration.ofSeconds(120))
+      .build()
+    return client
+  }
 
   @PreDestroy
   fun cleanup() {
