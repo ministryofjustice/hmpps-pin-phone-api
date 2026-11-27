@@ -45,18 +45,18 @@ class BtCallRecordsController(
     )
     prisonerNumber: String,
     @RequestParam
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Parameter(
       description = "Start date for call history search",
-      example = "2026-11-01T00:00:00",
+      example = "2026-11-01",
       required = true,
     )
     startDate: LocalDateTime,
     @RequestParam
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Parameter(
       description = "End date for call history search",
-      example = "2026-11-30T23:59:59",
+      example = "2026-11-30",
       required = true,
     )
     endDate: LocalDateTime,
