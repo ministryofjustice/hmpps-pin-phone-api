@@ -164,6 +164,49 @@
           }
         }
       }
+    },
+    "/pcs/CallRecords": {
+      "post": {
+        "operationId": "getCallRecords",
+        "summary": "Get prisoner call records",
+        "description": "Retrieves call history for a prisoner's PIN phone account.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BtCallRecordsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call records retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BtCallRecordsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Unauthorised — token missing or expired"
+          },
+          "404": {
+            "description": "Prisoner not found"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -405,7 +448,111 @@
             "description": "The balance after"
           }
         }
+      },
+      "BtCallRecordsRequest": {
+        "type": "object",
+        "description": "Request to retrieve a prisoner's call history",
+        "required": [
+          "reference",
+          "prisonerId",
+          "startDate",
+          "endDate"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "A unique reference for this request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start of the call history date range"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End of the call history date range"
+          }
+        }
+      },
+      "BtCallRecordsResponse": {
+        "type": "object",
+        "description": "Prisoner call history details",
+        "required": [
+          "reference",
+          "prisonerId",
+          "callRecords"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "The reference from the original request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "callRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallRecord"
+            }
+          }
+        }
+      },
+      "CallRecord": {
+        "type": "object",
+        "required": [
+          "id",
+          "phoneNumber",
+          "transactionStartTime",
+          "type",
+          "duration",
+          "costPence",
+          "balancePence"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unique call record identifier"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Telephone number called"
+          },
+          "transactionStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time the call started"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "BT call type code"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Call duration in seconds"
+          },
+          "costPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Cost of the call in pence"
+          },
+          "balancePence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Prisoner's balance after the call in pence"
+          }
+        }
+      }
       }
     }
   }
-}
+

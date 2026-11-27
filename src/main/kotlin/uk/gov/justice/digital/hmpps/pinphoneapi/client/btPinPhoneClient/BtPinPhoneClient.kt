@@ -12,12 +12,15 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.AccountCreditRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.AccountCreditResponse
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtCallRecordsRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtCallRecordsResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtTokenRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtTokenResponse
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.CallRecord
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
 
 @Component
@@ -92,4 +95,25 @@ class BtPinPhoneClient(
         UpstreamException(error.userMessage ?: "Add credit failed")
       }
   }
+
+  fun getCallRecords(btCallRecordsRequest: BtCallRecordsRequest, ): Mono<List<CallRecord>> =
+    getBtToken().flatMap { btAuthResponse ->
+      btPinPhoneWebClient
+        .post()
+        .uri("/pcs/CallRecords")
+        .headers { it.setBearerAuth(btAuthResponse.accessToken) }
+        .bodyValue(btCallRecordsRequest)
+        .retrieve()
+        .bodyToMono<BtCallRecordsResponse>()
+        .map { it.callRecords }
+        .onErrorMap(WebClientResponseException::class.java) { ex ->
+          val error = errorHandler.handleError(ex)
+
+          logger.error(
+            "BT call history request failed for prisoner ${btCallRecordsRequest.prisonerId}: ${ex.responseBodyAsString}",
+          )
+
+          UpstreamException(error.userMessage ?: "Call history request failed")
+        }
+    }
 }
