@@ -57,6 +57,8 @@ class BtPinPhoneCallRecordsClientTest {
           prisonerId = "xyz",
           startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
           endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+          pageSize = 50,
+          pageNumber = 0,
         ),
       ).block()
 
@@ -98,6 +100,8 @@ class BtPinPhoneCallRecordsClientTest {
             prisonerId = "xyz",
             startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
             endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+            pageSize = 50,
+            pageNumber = 0,
           ),
         ).block()
       }
@@ -128,6 +132,8 @@ class BtPinPhoneCallRecordsClientTest {
             prisonerId = "xyz",
             startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
             endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+            pageSize = 50,
+            pageNumber = 0,
           ),
         ).block()
       }

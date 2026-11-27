@@ -456,7 +456,9 @@
           "reference",
           "prisonerId",
           "startDate",
-          "endDate"
+          "endDate",
+          "pageSize",
+          "pageNumber"
         ],
         "properties": {
           "reference": {
@@ -476,6 +478,16 @@
             "type": "string",
             "format": "date-time",
             "description": "End of the call history date range"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of call history records to return per page"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Zero-based page number of the call history results"
           }
         }
       },

@@ -60,9 +60,25 @@ class BtCallRecordsController(
       required = true,
     )
     endDate: LocalDateTime,
+    @RequestParam
+    @Parameter(
+      description = "Number of call history records to return per page",
+      example = "50",
+      required = true,
+    )
+    pageSize: Int,
+    @RequestParam
+    @Parameter(
+      description = "Zero-based page number of the call history results",
+      example = "0",
+      required = true,
+    )
+    pageNumber: Int,
   ) = btPinPhoneCallRecordsService.getCallRecords(
     prisonerNumber = prisonerNumber,
     startDate = startDate,
     endDate = endDate,
+    pageSize = pageSize,
+    pageNumber = pageNumber,
   )
 }

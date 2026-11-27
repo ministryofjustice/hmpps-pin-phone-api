@@ -24,6 +24,8 @@ class BtPinPhoneCallRecordsService(
     prisonerNumber: String,
     startDate: LocalDateTime,
     endDate: LocalDateTime,
+    pageSize: Int,
+    pageNumber: Int,
   ): Mono<List<BtPinPhoneCallRecordDto>> {
     val reference = UUID.randomUUID()
       .toString()
@@ -36,6 +38,8 @@ class BtPinPhoneCallRecordsService(
         prisonerId = prisonerNumber,
         startDate = startDate,
         endDate = endDate,
+        pageSize = pageSize,
+        pageNumber = pageNumber,
       ),
     ).map { records ->
       records.map { it.toDto() }
