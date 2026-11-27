@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.BtPinPho
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.BtCallRecordsRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.mapping.prisonerenrichment.BtPinPhoneCallRecordDto
 import uk.gov.justice.digital.hmpps.pinphoneapi.mapping.prisonerenrichment.toDto
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -22,8 +22,8 @@ class BtPinPhoneCallRecordsService(
    */
   fun getCallRecords(
     prisonerNumber: String,
-    startDate: LocalDateTime,
-    endDate: LocalDateTime,
+    startDate: LocalDate,
+    endDate: LocalDate,
     pageSize: Int,
     pageNumber: Int,
   ): Mono<List<BtPinPhoneCallRecordDto>> {

@@ -471,12 +471,12 @@
           },
           "startDate": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "description": "Start of the call history date range"
           },
           "endDate": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "description": "End of the call history date range"
           },
           "pageSize": {

@@ -76,8 +76,8 @@ class BtCallRecordsController(
     pageNumber: Int,
   ) = btPinPhoneCallRecordsService.getCallRecords(
     prisonerNumber = prisonerNumber,
-    startDate = startDate,
-    endDate = endDate,
+    startDate = startDate.toLocalDate(),
+    endDate = endDate.toLocalDate(),
     pageSize = pageSize,
     pageNumber = pageNumber,
   )
