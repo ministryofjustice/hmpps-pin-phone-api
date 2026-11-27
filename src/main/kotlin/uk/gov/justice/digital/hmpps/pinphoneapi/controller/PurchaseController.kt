@@ -17,7 +17,10 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.pinphoneapi.service.FliptFeatureToggleService
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationService
+import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationServiceV2
 
 @RestController
 @PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
@@ -26,7 +29,12 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchest
   name = "Purchase",
   description = "Purchase API",
 )
-class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService) {
+class PurchaseController(
+  private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService,
+  private val pinPhoneBuyCreditOrchestrationServiceV2: PinPhoneBuyCreditOrchestrationServiceV2,
+  private val medusaInternalClient: MedusaInternalClient,
+  private val flipt: FliptFeatureToggleService,
+) {
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Creates a new cart for the prisoner customer")
@@ -38,7 +46,11 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/carts", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = if (flipt.isUpdatedPaymentsEnabled(createCartRequest.metadata.offenderNo)) {
+    ResponseEntity.ok(medusaInternalClient.createCart(createCartRequest))
+  } else {
+    pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  }
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
@@ -56,8 +68,11 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     @PathVariable cartId: String,
     @RequestBody paymentRequest: PaymentRequest,
   ): ResponseEntity<CompleteCartResponse> {
-    val response = pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
-
+    val response = if (flipt.isUpdatedPaymentsEnabled(paymentRequest.offenderNo)) {
+      pinPhoneBuyCreditOrchestrationServiceV2.processCheckout(paymentRequest, cartId)
+    } else {
+      pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
+    }
     return if (response.paymentSuccessful) {
       ResponseEntity.ok(response)
     } else {

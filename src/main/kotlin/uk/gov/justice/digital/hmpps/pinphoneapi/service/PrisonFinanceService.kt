@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.CreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldTransaction
@@ -24,11 +25,39 @@ class PrisonFinanceService(
     const val REMOVE_HOLD_DESCRIPTION = "Remove HOLD"
     const val CLIENT_REFERENCE_PREFIX = "CLIENT-"
     const val CLIENT_TRANSACTION_ID_LENGTH = 12
+    const val HOLD = "HOLD"
+    const val RELEASE = "RELEASE"
+    const val REMOVE = "REMOVE"
+    const val PHONE = "PHONE"
 
-    private const val HOLD = "HOLD"
-    private const val RELEASE = "RELEASE"
-    private const val REMOVE = "REMOVE"
-    private const val PHONE = "PHONE"
+    // new
+    const val ON_CREATE_X_CLIENT_NAME = "PHONE"
+    const val ON_REFUND_X_CLIENT_NAME = "REFUND-PHONE"
+    const val CREATE_PHONE_TRANSACTION_DESCRIPTION = "PHONE, Debiting %dp, for purchase of pin phone credit"
+    const val REFUND_PHONE_TRANSACTION_DESCRIPTION = "PINS, Crediting %dp, for refund of purchase of pin phone credit, PHONE debit transaction ID: %s"
+  }
+
+  fun createTransactionPhone(prisonId: String, offenderNo: String, amountPence: Long, cartId: String): Transaction {
+    val request = CreateTransaction(
+      type = CreateTransaction.Type.PHONE,
+      description = CREATE_PHONE_TRANSACTION_DESCRIPTION.format(amountPence),
+      amount = amountPence,
+      clientTransactionId = generateClientTransactionId(),
+      clientUniqueRef = cartId,
+    )
+    return prisonFinanceClient.createTransactionPhone(prisonId, offenderNo, ON_CREATE_X_CLIENT_NAME, request)
+  }
+
+  fun refundTransactionPhone(prisonId: String, offenderNo: String, amountPence: Long, cartId: String, transactionId: String): Transaction {
+    val request = CreateTransaction(
+      // todo: change to PINS refund type
+      type = CreateTransaction.Type.REFND,
+      description = REFUND_PHONE_TRANSACTION_DESCRIPTION.format(amountPence, transactionId),
+      amount = amountPence,
+      clientTransactionId = generateClientTransactionId(),
+      clientUniqueRef = cartId,
+    )
+    return prisonFinanceClient.createTransactionPhone(prisonId, offenderNo, ON_REFUND_X_CLIENT_NAME, request)
   }
 
   /**

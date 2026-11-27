@@ -36,4 +36,3 @@ generic-service:
     API_BT_BASE_URL: "https://api.pinmanager.bt.com:8443"
     SPRING_PROFILES_ACTIVE: prod
     FLIPT_URL: "https://feature-toggles.hmpps.service.justice.gov.uk"
-    FLIPT_NAMESPACE: hmpps-pin-phone

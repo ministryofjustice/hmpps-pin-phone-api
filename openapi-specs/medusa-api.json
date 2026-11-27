@@ -141,7 +141,9 @@
               "HOLD_FAILED",
               "BT_PAYMENT_FAILED",
               "RELEASE_HOLD_CREATE_TRANSACTION_FAILED",
-              "RELEASE_HOLD_FAILED"
+              "RELEASE_HOLD_FAILED",
+              "PHONE_TRANSACTION_FAILED",
+              "PHONE_REFUND_TRANSACTION_FAILED"
             ]
           },
           "errorMessage": {
@@ -404,7 +406,7 @@
               "type": "string",
               "format": "date"
             },
-            "description": "Lower bound for order dates (inclusive)",
+            "description": "The start date of the SAR request",
             "example": "2026-01-01"
           },
           {
@@ -415,7 +417,7 @@
               "type": "string",
               "format": "date"
             },
-            "description": "Upper bound for order dates (inclusive)",
+            "description": "End start date of the SAR request",
             "example": "2026-12-31"
           }
         ],
