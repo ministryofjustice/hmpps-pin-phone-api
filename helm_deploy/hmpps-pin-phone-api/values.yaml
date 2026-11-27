@@ -18,6 +18,8 @@ generic-service:
   env:
     SERVER_PORT: "8080"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.json"
+    FLIPT_NAMESPACE: hmpps-pin-phone
+    FLIPT_ENABLED: "true"
 
   # Secret env vars
   namespace_secrets:

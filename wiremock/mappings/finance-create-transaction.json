@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/api/v1/prison/.*/offenders/.*/transactions",
+    "headers": {
+      "X-Client-Name": {
+        "equalTo": "PHONE"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "finance-create-transaction-response.json"
+  }
+}

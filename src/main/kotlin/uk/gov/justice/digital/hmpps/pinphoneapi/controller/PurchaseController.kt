@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.pinphoneapi.controller
 
-import io.flipt.client.FliptClient
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -19,6 +18,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.pinphoneapi.service.FliptFeatureToggleService
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationService
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationServiceV2
 
@@ -33,7 +33,7 @@ class PurchaseController(
   private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService,
   private val pinPhoneBuyCreditOrchestrationServiceV2: PinPhoneBuyCreditOrchestrationServiceV2,
   private val medusaInternalClient: MedusaInternalClient,
-  private val fliptClient: FliptClient,
+  private val flipt: FliptFeatureToggleService,
 ) {
 
   @Suppress("MaxLineLength")
@@ -46,7 +46,7 @@ class PurchaseController(
     ],
   )
   @PostMapping("/carts", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = if (isV2PaymentsEnabled(createCartRequest.metadata.offenderNo)) {
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = if (flipt.isUpdatedPaymentsEnabled(createCartRequest.metadata.offenderNo)) {
     ResponseEntity.ok(medusaInternalClient.createCart(createCartRequest))
   } else {
     pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
@@ -68,7 +68,7 @@ class PurchaseController(
     @PathVariable cartId: String,
     @RequestBody paymentRequest: PaymentRequest,
   ): ResponseEntity<CompleteCartResponse> {
-    val response = if (isV2PaymentsEnabled(paymentRequest.offenderNo)) {
+    val response = if (flipt.isUpdatedPaymentsEnabled(paymentRequest.offenderNo)) {
       pinPhoneBuyCreditOrchestrationServiceV2.processCheckout(paymentRequest, cartId)
     } else {
       pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
@@ -79,6 +79,4 @@ class PurchaseController(
       ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(response)
     }
   }
-
-  private fun isV2PaymentsEnabled(offenderNo: String): Boolean = fliptClient.evaluateBoolean("use-updated-payment-logic", offenderNo, emptyMap()).isEnabled
 }
