@@ -37,26 +37,25 @@ class PrisonFinanceService(
     const val REFUND_PHONE_TRANSACTION_DESCRIPTION = "PINS, Crediting %dp, for refund of purchase of pin phone credit, PHONE debit transaction ID: %s"
   }
 
-
   fun createTransactionPhone(prisonId: String, offenderNo: String, amountPence: Long, cartId: String): Transaction {
     val request = CreateTransaction(
       type = CreateTransaction.Type.PHONE,
       description = CREATE_PHONE_TRANSACTION_DESCRIPTION.format(amountPence),
       amount = amountPence,
       clientTransactionId = generateClientTransactionId(),
-      clientUniqueRef = cartId
+      clientUniqueRef = cartId,
     )
     return prisonFinanceClient.createTransactionPhone(prisonId, offenderNo, ON_CREATE_X_CLIENT_NAME, request)
   }
 
   fun refundTransactionPhone(prisonId: String, offenderNo: String, amountPence: Long, cartId: String, transactionId: String): Transaction {
     val request = CreateTransaction(
-      //todo: change to PINS refund type
+      // todo: change to PINS refund type
       type = CreateTransaction.Type.REFND,
       description = REFUND_PHONE_TRANSACTION_DESCRIPTION.format(amountPence, transactionId),
       amount = amountPence,
       clientTransactionId = generateClientTransactionId(),
-      clientUniqueRef = cartId
+      clientUniqueRef = cartId,
     )
     return prisonFinanceClient.createTransactionPhone(prisonId, offenderNo, ON_REFUND_X_CLIENT_NAME, request)
   }

@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
-import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequestV2
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationService
 import uk.gov.justice.digital.hmpps.pinphoneapi.service.PinPhoneBuyCreditOrchestrationServiceV2
@@ -34,7 +33,8 @@ class PurchaseController(
   private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService,
   private val pinPhoneBuyCreditOrchestrationServiceV2: PinPhoneBuyCreditOrchestrationServiceV2,
   private val medusaInternalClient: MedusaInternalClient,
-  private val fliptClient: FliptClient) {
+  private val fliptClient: FliptClient,
+) {
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Creates a new cart for the prisoner customer")
@@ -46,12 +46,11 @@ class PurchaseController(
     ],
   )
   @PostMapping("/carts", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> =
-    if (isV2PaymentsEnabled(createCartRequest.metadata.offenderNo)) {
-      ResponseEntity.ok(medusaInternalClient.createCart(createCartRequest))
-    } else {
-      pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
-    }
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = if (isV2PaymentsEnabled(createCartRequest.metadata.offenderNo)) {
+    ResponseEntity.ok(medusaInternalClient.createCart(createCartRequest))
+  } else {
+    pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  }
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
@@ -70,12 +69,7 @@ class PurchaseController(
     @RequestBody paymentRequest: PaymentRequest,
   ): ResponseEntity<CompleteCartResponse> {
     val response = if (isV2PaymentsEnabled(paymentRequest.offenderNo)) {
-      val v2Request = PaymentRequestV2(
-        amountPence = paymentRequest.amountPence,
-        offenderNo = paymentRequest.offenderNo,
-        prisonId = paymentRequest.prisonId,
-      )
-      pinPhoneBuyCreditOrchestrationServiceV2.processCheckout(v2Request, cartId)
+      pinPhoneBuyCreditOrchestrationServiceV2.processCheckout(paymentRequest, cartId)
     } else {
       pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
     }
@@ -86,6 +80,5 @@ class PurchaseController(
     }
   }
 
-  private fun isV2PaymentsEnabled(offenderNo: String): Boolean =
-    fliptClient.evaluateBoolean("use-updated-payment-logic", offenderNo, emptyMap()).isEnabled
+  private fun isV2PaymentsEnabled(offenderNo: String): Boolean = fliptClient.evaluateBoolean("use-updated-payment-logic", offenderNo, emptyMap()).isEnabled
 }

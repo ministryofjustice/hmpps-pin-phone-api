@@ -7,16 +7,16 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.BtPinPho
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.AccountCreditRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.btPinPhoneClient.generated.AccountCreditResponse
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.CompleteCartResponse
-import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequestV2
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.DuplicateFinanceRequestException
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
 
 @Service
 class PinPhoneBuyCreditOrchestrationServiceV2(
-    private val financeService: PrisonFinanceService,
-    private val medusaStoreClient: MedusaInternalClient,
-    private val btPinPhoneClient: BtPinPhoneClient,
+  private val financeService: PrisonFinanceService,
+  private val medusaStoreClient: MedusaInternalClient,
+  private val btPinPhoneClient: BtPinPhoneClient,
 ) {
   companion object {
     private const val MAX_BT_ATTEMPTS = 3
@@ -25,7 +25,7 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
     private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationServiceV2")
   }
 
-  fun processCheckout(paymentRequest: PaymentRequestV2, cartId: String): CompleteCartResponse {
+  fun processCheckout(paymentRequest: PaymentRequest, cartId: String): CompleteCartResponse {
     val offenderNo = requireNotNull(paymentRequest.offenderNo) { "offenderNo must not be null" }
     val amountPence = requireNotNull(paymentRequest.amountPence) { "amountPence must not be null" }
     val prisonId = requireNotNull(paymentRequest.prisonId) { "prisonId must not be null" }
@@ -38,32 +38,32 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
       return awaitOriginalCheckout(cartId, offenderNo)
     } catch (e: UpstreamException) {
       log.error("Failed to create transaction for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
-      val medusaRequest = PaymentRequestV2(
-          amountPence = amountPence,
-          offenderNo = offenderNo,
-          prisonId = prisonId,
-          paymentStatus = PaymentRequestV2.PaymentStatus.ERROR,
-          errorCode = PaymentRequestV2.ErrorCode.PHONE_TRANSACTION_FAILED,
-          errorMessage = e.message,
+      val medusaRequest = PaymentRequest(
+        amountPence = amountPence,
+        offenderNo = offenderNo,
+        prisonId = prisonId,
+        paymentStatus = PaymentRequest.PaymentStatus.ERROR,
+        errorCode = PaymentRequest.ErrorCode.PHONE_TRANSACTION_FAILED,
+        errorMessage = e.message,
       )
       return recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = false)
     }
 
-    log.info("Transaction placed for prisoner: {} transaction ID: {}", offenderNo, createTransactionPhone.id)
+    log.info("Transaction placed for prisoner: {} PHONE transaction ID: {}", offenderNo, createTransactionPhone.id)
 
     val btResponse = try {
       callBtApiWithRetry(offenderNo, amountPence.toInt(), cartId)
     } catch (e: UpstreamException) {
       log.error("BT payment failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
-      val errorCode = PaymentRequestV2.ErrorCode.BT_PAYMENT_FAILED
+      val errorCode = PaymentRequest.ErrorCode.BT_PAYMENT_FAILED
       return handleCheckoutError(createTransactionPhone.id, prisonId, offenderNo, cartId, amountPence, errorCode, e.message)
     }
 
-    val medusaRequest = PaymentRequestV2(
+    val medusaRequest = PaymentRequest(
       amountPence = amountPence,
       offenderNo = offenderNo,
       prisonId = prisonId,
-      paymentStatus = PaymentRequestV2.PaymentStatus.AUTHORIZED,
+      paymentStatus = PaymentRequest.PaymentStatus.AUTHORIZED,
       financeTransactionReference = createTransactionPhone.id,
       btCreditReference = btResponse.reference,
       btCreditLimitPence = btResponse.creditLimitPence,
@@ -82,9 +82,9 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
     for (attempt in 1..MAX_BT_ATTEMPTS) {
       try {
         val request = AccountCreditRequest(
-            reference = reference,
-            prisonerId = offenderNo,
-            amountPence = amountPence,
+          reference = reference,
+          prisonerId = offenderNo,
+          amountPence = amountPence,
         )
         val response = btPinPhoneClient.addCredit(request).block()
           ?: throw RuntimeException("BT API returned null response")
@@ -109,23 +109,23 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
     offenderNo: String,
     cartId: String,
     amountPence: Long,
-    errorCode: PaymentRequestV2.ErrorCode,
+    errorCode: PaymentRequest.ErrorCode,
     errorMessage: String?,
   ): CompleteCartResponse {
     val actualErrorCode = try {
       financeService.refundTransactionPhone(prisonId, offenderNo, amountPence, cartId, transactionId)
-      log.info("Transaction refunded for prisoner {} transaction ID {}", offenderNo, transactionId)
+      log.info("Transaction refunded for prisoner {} for PHONE transaction ID {}", offenderNo, transactionId)
       errorCode
     } catch (e: UpstreamException) {
       log.error("Failed to refund transaction for prisoner {} transaction ID {}: {}", offenderNo, transactionId, e.message)
-      PaymentRequestV2.ErrorCode.PHONE_REFUND_TRANSACTION_FAILED
+      PaymentRequest.ErrorCode.PHONE_REFUND_TRANSACTION_FAILED
     }
 
-    val request = PaymentRequestV2(
+    val request = PaymentRequest(
       amountPence = amountPence,
       offenderNo = offenderNo,
       prisonId = prisonId,
-      paymentStatus = PaymentRequestV2.PaymentStatus.ERROR,
+      paymentStatus = PaymentRequest.PaymentStatus.ERROR,
       financeTransactionReference = transactionId,
       errorCode = actualErrorCode,
       errorMessage = errorMessage,
@@ -142,19 +142,19 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
    * Payment outcome not impacted
    */
   private fun recordInMedusa(
-      cartId: String,
-      offenderNo: String,
-      request: PaymentRequestV2,
-      paymentSuccessful: Boolean,
+    cartId: String,
+    offenderNo: String,
+    request: PaymentRequest,
+    paymentSuccessful: Boolean,
   ): CompleteCartResponse = try {
-    val cartResponse = medusaStoreClient.completeCartV2(cartId, request)
+    val cartResponse = medusaStoreClient.completeCart(cartId, request)
     log.info("Medusa recording complete for cart {} status {}", cartId, request.paymentStatus)
-      CompleteCartResponse(
-          paymentSuccessful = paymentSuccessful,
-          orderStatusRecorded = true,
-          orderId = if (paymentSuccessful) cartResponse.orderId else null,
-          cartId = cartId,
-      )
+    CompleteCartResponse(
+      paymentSuccessful = paymentSuccessful,
+      orderStatusRecorded = true,
+      orderId = if (paymentSuccessful) cartResponse.orderId else null,
+      cartId = cartId,
+    )
   } catch (e: Exception) {
     log.error(
       "Medusa recording failed for cart {} prisoner {} status {}: {}",
@@ -163,12 +163,12 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
       request.paymentStatus,
       e.message,
     )
-      CompleteCartResponse(
-          paymentSuccessful = paymentSuccessful,
-          orderStatusRecorded = false,
-          orderId = null,
-          cartId = cartId,
-      )
+    CompleteCartResponse(
+      paymentSuccessful = paymentSuccessful,
+      orderStatusRecorded = false,
+      orderId = null,
+      cartId = cartId,
+    )
   }
 
   /**
@@ -183,10 +183,10 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
       if (cart?.completedAt != null) {
         log.info("Original checkout for cart {} completed – returning its result", cartId)
         return CompleteCartResponse(
-            paymentSuccessful = true,
-            orderStatusRecorded = true,
-            orderId = cart.orderId,
-            cartId = cartId,
+          paymentSuccessful = true,
+          orderStatusRecorded = true,
+          orderId = cart.orderId,
+          cartId = cartId,
         )
       }
       Thread.sleep(DUPLICATE_POLL_INTERVAL_MS)
@@ -194,5 +194,4 @@ class PinPhoneBuyCreditOrchestrationServiceV2(
     log.warn("Original checkout for cart {} prisoner {} not complete after polling", cartId, offenderNo)
     throw Exception("Original checkout for cart $cartId not complete after polling")
   }
-
 }

@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.WebClientErrorHandler
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.DuplicateFinanceRequestException
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.CreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.client.prisonfinance.generated.ReleaseHoldTransaction
 import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
@@ -33,6 +35,56 @@ class PrisonFinanceClientTest {
       .build()
     val webClientErrorHandler = WebClientErrorHandler(mapper)
     client = PrisonFinanceClient(webClient, webClientErrorHandler)
+  }
+
+  @Test
+  fun `createTransactionPhone - successfully creates transaction`() {
+    server.stubCreateTransactionPhone(PRISONER_ID, PRISONER_NUMBER)
+    val request = CreateTransaction(
+      type = CreateTransaction.Type.PHONE,
+      description = "Debiting 100p, for purchase of pin phone credit",
+      amount = 100,
+      clientTransactionId = "trans1",
+      clientUniqueRef = "cart_123",
+    )
+
+    val result = client.createTransactionPhone(PRISONER_ID, PRISONER_NUMBER, "PHONE", request)
+
+    assertThat(result).isNotNull
+    assertThat(result.id).isEqualTo("468198331-1")
+  }
+
+  @Test
+  fun `createTransactionPhone - throws UpstreamException on failure`() {
+    server.stubCreateTransactionPhoneFailure(PRISONER_ID, PRISONER_NUMBER, 400, "Insufficient funds")
+    val request = CreateTransaction(
+      type = CreateTransaction.Type.PHONE,
+      description = "Debiting 100p, for purchase of pin phone credit",
+      amount = 100,
+      clientTransactionId = "trans1",
+      clientUniqueRef = "cart_123",
+    )
+
+    assertThatThrownBy {
+      client.createTransactionPhone(PRISONER_ID, PRISONER_NUMBER, "PHONE", request)
+    }.isInstanceOf(UpstreamException::class.java)
+      .hasMessage("Insufficient funds")
+  }
+
+  @Test
+  fun `createTransactionPhone - throws DuplicateFinanceRequestException on conflict`() {
+    server.stubCreateTransactionPhoneDuplicate(PRISONER_ID, PRISONER_NUMBER)
+    val request = CreateTransaction(
+      type = CreateTransaction.Type.PHONE,
+      description = "Debiting 100p, for purchase of pin phone credit",
+      amount = 100,
+      clientTransactionId = "trans1",
+      clientUniqueRef = "cart_123",
+    )
+
+    assertThatThrownBy {
+      client.createTransactionPhone(PRISONER_ID, PRISONER_NUMBER, "PHONE", request)
+    }.isInstanceOf(DuplicateFinanceRequestException::class.java)
   }
 
   @Test

@@ -37,6 +37,40 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8098
   }
 
+  fun stubCreateTransactionPhone(prisonId: String, offenderNo: String): StubMapping = stubFor(
+    post(urlEqualTo("/api/v1/prison/$prisonId/offenders/$offenderNo/transactions"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody("""{"id": "468198331-1"}""")
+          .withStatus(200),
+      ),
+  )
+
+  fun stubCreateTransactionPhoneFailure(prisonId: String, offenderNo: String, status: Int, userMessage: String): StubMapping = stubFor(
+    post(urlEqualTo("/api/v1/prison/$prisonId/offenders/$offenderNo/transactions"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            "{\n" +
+              "  \"status\": $status,\n" +
+              "  \"userMessage\": \"$userMessage\"\n" +
+              "}",
+          )
+          .withStatus(status),
+      ),
+  )
+
+  fun stubCreateTransactionPhoneDuplicate(prisonId: String, offenderNo: String): StubMapping = stubFor(
+    post(urlEqualTo("/api/v1/prison/$prisonId/offenders/$offenderNo/transactions"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(409),
+      ),
+  )
+
   fun stubAddHold(prisonId: String, offenderNo: String): StubMapping = stubFor(
     post(urlEqualTo("/api/finance-holds/prison/$prisonId/offenders/$offenderNo/add-hold"))
       .willReturn(

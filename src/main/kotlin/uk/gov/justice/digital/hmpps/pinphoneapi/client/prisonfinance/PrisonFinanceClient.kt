@@ -27,7 +27,6 @@ class PrisonFinanceClient(
     val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
   }
 
-
   @Suppress("ktlint:standard:function-expression-body")
   fun createTransactionPhone(
     prisonId: String,
@@ -57,8 +56,7 @@ class PrisonFinanceClient(
     }
   }
 
-
-  //todo: below calls will be made legacy and can be removed later
+  // todo: below calls will be made legacy and can be removed later
 
   @Suppress("ktlint:standard:function-expression-body")
   fun addHold(
