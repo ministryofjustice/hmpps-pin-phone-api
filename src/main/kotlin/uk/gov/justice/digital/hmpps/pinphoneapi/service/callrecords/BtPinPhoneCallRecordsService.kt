@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.mapping.prisonerenrichment.toDto
 import java.time.LocalDateTime
 import java.util.UUID
 
-
 @Service
 class BtPinPhoneCallRecordsService(
   private val btPinPhoneClient: BtPinPhoneClient,

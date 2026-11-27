@@ -140,7 +140,7 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
                 }
               ]
             }
-            """.trimIndent(),
+              """.trimIndent(),
             ),
         ),
     )

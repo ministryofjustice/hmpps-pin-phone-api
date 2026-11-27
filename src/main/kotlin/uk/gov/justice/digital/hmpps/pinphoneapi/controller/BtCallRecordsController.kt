@@ -44,7 +44,6 @@ class BtCallRecordsController(
       required = true,
     )
     prisonerNumber: String,
-
     @RequestParam
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Parameter(
@@ -53,7 +52,6 @@ class BtCallRecordsController(
       required = true,
     )
     startDate: LocalDateTime,
-
     @RequestParam
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Parameter(

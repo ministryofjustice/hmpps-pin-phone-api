@@ -96,24 +96,23 @@ class BtPinPhoneClient(
       }
   }
 
-  fun getCallRecords(btCallRecordsRequest: BtCallRecordsRequest, ): Mono<List<CallRecord>> =
-    getBtToken().flatMap { btAuthResponse ->
-      btPinPhoneWebClient
-        .post()
-        .uri("/pcs/CallRecords")
-        .headers { it.setBearerAuth(btAuthResponse.accessToken) }
-        .bodyValue(btCallRecordsRequest)
-        .retrieve()
-        .bodyToMono<BtCallRecordsResponse>()
-        .map { it.callRecords }
-        .onErrorMap(WebClientResponseException::class.java) { ex ->
-          val error = errorHandler.handleError(ex)
+  fun getCallRecords(btCallRecordsRequest: BtCallRecordsRequest): Mono<List<CallRecord>> = getBtToken().flatMap { btAuthResponse ->
+    btPinPhoneWebClient
+      .post()
+      .uri("/pcs/CallRecords")
+      .headers { it.setBearerAuth(btAuthResponse.accessToken) }
+      .bodyValue(btCallRecordsRequest)
+      .retrieve()
+      .bodyToMono<BtCallRecordsResponse>()
+      .map { it.callRecords }
+      .onErrorMap(WebClientResponseException::class.java) { ex ->
+        val error = errorHandler.handleError(ex)
 
-          logger.error(
-            "BT call history request failed for prisoner ${btCallRecordsRequest.prisonerId}: ${ex.responseBodyAsString}",
-          )
+        logger.error(
+          "BT call history request failed for prisoner ${btCallRecordsRequest.prisonerId}: ${ex.responseBodyAsString}",
+        )
 
-          UpstreamException(error.userMessage ?: "Call history request failed")
-        }
-    }
+        UpstreamException(error.userMessage ?: "Call history request failed")
+      }
+  }
 }
