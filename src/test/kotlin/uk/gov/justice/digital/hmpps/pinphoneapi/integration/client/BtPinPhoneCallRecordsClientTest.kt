@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.pinphoneapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.BT_CLIENT_ID
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.BT_CLIENT_SECRET
 import uk.gov.justice.digital.hmpps.pinphoneapi.integration.wiremock.BtMockServer
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class BtPinPhoneCallRecordsClientTest {
@@ -55,8 +56,8 @@ class BtPinPhoneCallRecordsClientTest {
         BtCallRecordsRequest(
           reference = "testReference",
           prisonerId = "xyz",
-          startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
-          endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+          startDate = LocalDate.of(2026, 11, 1),
+          endDate = LocalDate.of(2026, 11, 30),
           pageSize = 50,
           pageNumber = 0,
         ),
@@ -98,8 +99,8 @@ class BtPinPhoneCallRecordsClientTest {
           BtCallRecordsRequest(
             reference = "testReference",
             prisonerId = "xyz",
-            startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
-            endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+            startDate = LocalDate.of(2026, 11, 1),
+            endDate = LocalDate.of(2026, 11, 30),
             pageSize = 50,
             pageNumber = 0,
           ),
@@ -130,8 +131,8 @@ class BtPinPhoneCallRecordsClientTest {
           BtCallRecordsRequest(
             reference = "testReference",
             prisonerId = "xyz",
-            startDate = LocalDateTime.of(2026, 11, 1, 0, 0),
-            endDate = LocalDateTime.of(2026, 11, 30, 23, 59),
+            startDate = LocalDate.of(2026, 11, 1),
+            endDate = LocalDate.of(2026, 11, 30),
             pageSize = 50,
             pageNumber = 0,
           ),

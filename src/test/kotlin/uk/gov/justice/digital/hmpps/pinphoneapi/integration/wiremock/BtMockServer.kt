@@ -123,7 +123,7 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
                 {
                   "id":1,
                   "phoneNumber":"07123456789",
-                  "transactionStartTime":"2026-11-20T14:30:00",
+                  "transactionStartTime":"2026-11-20",
                   "type":1,
                   "duration":300,
                   "costPence":150,
@@ -132,7 +132,7 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
                 {
                   "id":2,
                   "phoneNumber":"07000000000",
-                  "transactionStartTime":"2026-11-19T10:15:00",
+                  "transactionStartTime":"2026-11-19",
                   "type":2,
                   "duration":120,
                   "costPence":60,
