@@ -104,6 +104,47 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
   }
+
+  fun stubBtGetCallRecords() {
+    stubGetBtAuthToken()
+
+    stubFor(
+      post("/pcs/CallRecords")
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody(
+              """
+            {
+              "reference":"testReference",
+              "prisonerId":"xyz",
+              "callRecords":[
+                {
+                  "id":1,
+                  "phoneNumber":"07123456789",
+                  "transactionStartTime":"2026-11-20T14:30:00",
+                  "type":1,
+                  "duration":300,
+                  "costPence":150,
+                  "balancePence":5000
+                },
+                {
+                  "id":2,
+                  "phoneNumber":"07000000000",
+                  "transactionStartTime":"2026-11-19T10:15:00",
+                  "type":2,
+                  "duration":120,
+                  "costPence":60,
+                  "balancePence":4940
+                }
+              ]
+            }
+            """.trimIndent(),
+            ),
+        ),
+    )
+  }
 }
 
 class BtApiExtension :
